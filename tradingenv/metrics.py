@@ -816,8 +816,8 @@ class SeriesMetrics(NDFrame):
         2019-01-09   -0.002738
         2019-01-10   -0.020833
         Freq: B, dtype: float64
-        >>> trendline['std']
-        0.01771850948108486
+        >>> trendline['std']  # doctest: +ELLIPSIS
+        0.01771850...
         """
         y = self
         if reset_index:

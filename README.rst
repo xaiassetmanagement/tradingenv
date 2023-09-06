@@ -1,3 +1,5 @@
+# TODO: add test coverage badge here.
+
 Introduction
 ============
 Backtest trading strategies or train reinforcement learning agents with
@@ -13,12 +15,14 @@ supported include stocks, ETF and futures.
 in conjunction with popular reinforcement learning frameworks including rllib_ 
 and stable-baselines3_.
 
-**Design principles**
 
-- **simple**: the only entry point is the class :py:class:`TradingEnv`.
-- **fast**: implemented with the python standard library and numpy.
-- **tested**: the test suite provides a comprehensive number of examples and use cases.
-- **realistic**: support for a variety of transaction costs including: bid-ask spread, cost of leverage, fixed and proportional broker commissions, latencies and slippage. Cash deposits can optionally yield an interest rate.
+Example - Backtesting
+=====================
+TODO: Backtest 60:40 and show tearsheet.
+
+Example - Reinforcement Learning
+================================
+TODO: Trade SPX using transaction costs. Show OpenAI - API.
 
 
 Installation
