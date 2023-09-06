@@ -1,27 +1,26 @@
-__package__ = "trading-gym"
-__version__ = "0.12.5"
+__package__ = "tradingenv"
+__version__ = "0.1.0"
 
 # Modules.
-import trading_gym.broker.broker
-import trading_gym.policy
-import trading_gym.registry
-import trading_gym.env
-import trading_gym.events
-import trading_gym.exchange
-import trading_gym.metrics
-import trading_gym.rewards
-import trading_gym.spaces
-import trading_gym.transmitter
-import trading_gym.contracts
+import tradingenv.broker.broker
+import tradingenv.policy
+import tradingenv.env
+import tradingenv.events
+import tradingenv.exchange
+import tradingenv.metrics
+import tradingenv.rewards
+import tradingenv.spaces
+import tradingenv.transmitter
+import tradingenv.contracts
 
 # Common classes.
-from trading_gym.env import TradingEnv
-from trading_gym.spaces import BoxPortfolio
-from trading_gym.state import IState
-from trading_gym.transmitter import Transmitter
-from trading_gym.broker.fees import BrokerFees
-from trading_gym.policy import AbstractPolicy
-from trading_gym.events import (
+from tradingenv.env import TradingEnv
+from tradingenv.spaces import BoxPortfolio
+from tradingenv.state import IState
+from tradingenv.transmitter import Transmitter
+from tradingenv.broker.fees import BrokerFees
+from tradingenv.policy import AbstractPolicy
+from tradingenv.events import (
     IEvent,
     EventDone,
     EventNBBO,

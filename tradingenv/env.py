@@ -1,17 +1,16 @@
 """The core module of trading-gym. TradingEnv is your market simulator to run
 backtests or train reinforcement learning agents."""
-from trading_gym.spaces import PortfolioSpace, BoxPortfolio
-from trading_gym.broker.broker import Broker, EndOfEpisodeError
-from trading_gym.broker.track_record import TrackRecord
-from trading_gym.broker.fees import IBrokerFees, BrokerFees
-from trading_gym.exchange import Exchange
-from trading_gym.contracts import AbstractContract, Cash
-from trading_gym.rewards import make_reward, AbstractReward, RewardSimpleReturn
-from trading_gym.policy import make_policy
-from trading_gym.dashboard.core import Dashboard
-from trading_gym.state import IState
-from trading_gym.features import Feature
-from trading_gym.events import (
+from tradingenv.spaces import PortfolioSpace, BoxPortfolio
+from tradingenv.broker.broker import Broker, EndOfEpisodeError
+from tradingenv.broker.track_record import TrackRecord
+from tradingenv.broker.fees import IBrokerFees, BrokerFees
+from tradingenv.exchange import Exchange
+from tradingenv.contracts import AbstractContract, Cash
+from tradingenv.rewards import make_reward, AbstractReward, RewardSimpleReturn
+from tradingenv.policy import make_policy
+from tradingenv.state import IState
+from tradingenv.features import Feature
+from tradingenv.events import (
     Observer,
     IEvent,
     EventReset,
@@ -20,7 +19,7 @@ from trading_gym.events import (
     EventNBBO,
     EventNewDate,
 )
-from trading_gym.transmitter import (
+from tradingenv.transmitter import (
     AbstractTransmitter,
     AsynchronousTransmitter,
     Transmitter,

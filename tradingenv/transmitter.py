@@ -2,7 +2,7 @@
 simulation. This could either be done by the client with TradingEnv.add_event
 (low-level) OR by providing a AbstractTransmitter when instancing TradingEnv (
 high-level, recommended)."""
-from trading_gym.events import IEvent, EventNBBO
+from tradingenv.events import IEvent, EventNBBO
 from typing import Iterable, List, Dict, Type, Sequence, Tuple
 from datetime import datetime, timezone
 from collections import defaultdict, OrderedDict
@@ -183,7 +183,7 @@ class Transmitter(AbstractTransmitter):
 
         Examples
         --------
-        >>> from trading_gym.contracts import Index
+        >>> from tradingenv.contracts import Index
         >>> returns = pd.DataFrame(
         ...     data=np.random.normal(0, 0.001, (100, 2)),
         ...     columns=[Index('S&P 500'), Index('T-Bond')],
@@ -391,8 +391,8 @@ class Transmitter(AbstractTransmitter):
 
         Examples
         --------
-        >>> from trading_gym.events import IEvent
-        >>> from trading_gym.transmitter import Transmitter
+        >>> from tradingenv.events import IEvent
+        >>> from tradingenv.transmitter import Transmitter
         >>> from datetime import datetime
         >>>
         >>> class NewsSentiment(IEvent):

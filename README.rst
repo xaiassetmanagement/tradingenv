@@ -18,7 +18,7 @@ and stable-baselines3_.
 - **simple**: the only entry point is the class :py:class:`TradingEnv`.
 - **fast**: implemented with the python standard library and numpy.
 - **tested**: the test suite provides a comprehensive number of examples and use cases.
-- **realistic**: support for a variety of transaction costs including: bid-ask spread, cost of leverage, fixed and proportional broker commissions, latencies and slippage. Deposits can optionally yield and interest rate.
+- **realistic**: support for a variety of transaction costs including: bid-ask spread, cost of leverage, fixed and proportional broker commissions, latencies and slippage. Cash deposits can optionally yield an interest rate.
 
 
 Installation

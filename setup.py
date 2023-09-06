@@ -39,7 +39,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.10",
     ],
     keywords="trading gym",
-    packages=setuptools.find_packages(exclude=["doc", "notebooks", "tests"]),
+    packages=setuptools.find_packages(exclude=["docs", "notebooks", "tests"]),
     install_requires=[
         "exchange_calendars",
         "gym==0.21",
