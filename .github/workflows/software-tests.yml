@@ -32,7 +32,7 @@ jobs:
         # See https://github.com/pypa/setuptools/issues/3801#issuecomment-1490841176
         # pip install setuptools==57.1.0
         # https://github.com/openai/gym/issues/3211#issuecomment-1547746941
-        pip install wheel<0.40.0
+        pip install wheel==0.38.4
         pip install setuptools==66
         # Install tradingenv.
         pip install .[extra]
