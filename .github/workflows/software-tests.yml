@@ -1,7 +1,9 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Python application
+name: Run software tests.
+
+run-name: ${{ github.actor }} is testing tradingenv.
 
 on:
   push:
@@ -27,6 +29,9 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         # pip install flake8 pytest
+        # See https://github.com/pypa/setuptools/issues/3801#issuecomment-1490841176
+        pip install setuptools==57.1.0
+        # Install tradingenv.
         pip install .[extra]
         # if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with flake8
