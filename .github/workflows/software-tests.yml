@@ -30,7 +30,8 @@ jobs:
         python -m pip install --upgrade pip
         # pip install flake8 pytest
         # See https://github.com/pypa/setuptools/issues/3801#issuecomment-1490841176
-        pip install setuptools==57.1.0
+        # pip install setuptools==57.1.0
+        pip install setuptools==66
         # Install tradingenv.
         pip install .[extra]
         # if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
