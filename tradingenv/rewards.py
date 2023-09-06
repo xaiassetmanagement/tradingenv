@@ -1,0 +1,78 @@
+"""The reward is a parameter of TradingEnv. Valid rewards must implement the
+abstract class AbstractReward."""
+import tradingenv
+from abc import ABC, abstractmethod
+import numpy as np
+from typing import Union
+
+
+def make_reward(reward: Union["AbstractReward", str]):
+    """Valid reward are implementation of the interface AbstractReward. However,
+    this method allows the user to specify the reward as a string and the
+    corresponding id will be retrieved from tradingenv.rewards."""
+    if isinstance(reward, str):
+        reward = getattr(tradingenv.rewards, reward)()
+    if not isinstance(reward, AbstractReward):
+        raise ValueError(
+            "{} is an invalid reward. Valid rewards must be objects "
+            "implementing tradingenv.rewards.AbstractReward or strings "
+            "indicating referring to class _names defined in "
+            "tradingenv.rewards."
+        )
+    return reward
+
+
+class AbstractReward(ABC):
+    """All custom rewards must implement this interface."""
+
+    @abstractmethod
+    def calculate(self, env: "tradingenv.env.TradingEnv") -> float:
+        """Return float associated with the last reward of the agent,
+        generally manipulating stuff from env.broker.track_record. See
+        implementations for examples."""
+
+    def reset(self) -> None:
+        """Reset values of this class, if any."""
+
+
+class RewardPnL(AbstractReward):
+    """Profit and Loss reward."""
+
+    def calculate(self, env: "tradingenv.env.TradingEnv") -> float:
+        nlv_last_rebalancing = env.broker.track_record[-1].context_pre.nlv
+        nlv_now = env.broker.net_liquidation_value()
+        return float(nlv_now - nlv_last_rebalancing)
+
+
+class RewardLogReturn(AbstractReward):
+    """Log change of the net liquidation value of the account at each step."""
+
+    def calculate(self, env: "tradingenv.env.TradingEnv") -> float:
+        nlv_last_rebalancing = env.broker.track_record[-1].context_pre.nlv
+        nlv_now = env.broker.net_liquidation_value()
+        return float(np.log(nlv_now / nlv_last_rebalancing))
+
+
+class RewardSimpleReturn(AbstractReward):
+    """Simple change of the net liquidation value of the account at each
+    step."""
+
+    def calculate(self, env: "tradingenv.env.TradingEnv") -> float:
+        nlv_last_rebalancing = env.broker.track_record[-1].context_pre.nlv
+        nlv_now = env.broker.net_liquidation_value()
+        return float(nlv_now / nlv_last_rebalancing) - 1
+
+
+class RewardDifferentialSharpeRatio:
+    """An elegant online Sharpe ratio which uses the second order Taylor
+    expansion. I still wonder how problematic this approximation might be?
+
+    References
+    ----------
+    http://papers.nips.cc/paper/1551-reinforcement-learning-for-trading.pdf
+    https://quant.stackexchange.com/questions/37969/what-s-the-derivative-of-the-sharpe-ratio-for-one-asset-trying-to-optimize-on-i
+    https://www.reddit.com/r/algotrading/comments/9xkvby/how_to_calculate_differential_sharpe_ratio/
+    """
+
+    def calculate(self, env: "tradingenv.env.TradingEnv") -> float:
+        raise NotImplementedError()

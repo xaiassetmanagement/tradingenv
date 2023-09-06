@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.ipynb_checkpoints
+.cache
+.gitconfig
+/.coverage
+.DS_Store
+.idea
+/.pytest_cache/
+*logs*
+.venv/
+.coverage.*
+*.coverage*
+.tox/
+/.vscode/*
+/tradingenv.egg-info
