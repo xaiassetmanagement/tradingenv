@@ -1,10 +1,10 @@
-from trading_gym.transmitter import (
+from tradingenv.transmitter import (
     AsynchronousTransmitter,
     AbstractTransmitter,
     Transmitter,
     Folds,
 )
-from trading_gym.events import IEvent
+from tradingenv.events import IEvent
 from datetime import datetime, timezone
 import time as time_
 import numpy as np
