@@ -1,3 +1,5 @@
+![code coverage](https://raw.githubusercontent.com/USER/REPO/coverage-badge/coverage.svg?raw=true)
+
 # TODO: add test coverage badge here.
 
 Introduction
