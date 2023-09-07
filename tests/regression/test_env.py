@@ -247,7 +247,7 @@ class TestFutures:
 
         # Instance the env.
         prices = excel_futures.parse(
-            sheet_name="ES", index_col="Name", parse_dates=True
+            sheet_name="ES", index_col="Date", parse_dates=True
         )
         prices.rename(mapper=mapper, axis="columns", inplace=True)
         transmitter = Transmitter(
