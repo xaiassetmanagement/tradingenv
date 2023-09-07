@@ -1,5 +1,4 @@
 ![code coverage](https://raw.githubusercontent.com/USER/REPO/coverage-badge/coverage.svg?raw=true)
-
 # TODO: add test coverage badge here.
 
 Introduction
@@ -24,7 +23,43 @@ TODO: Backtest 60:40 and show tearsheet.
 
 Example - Reinforcement Learning
 ================================
-TODO: Trade SPX using transaction costs. Show OpenAI - API.
+
+.. code-block:: python
+
+    from tradingenv import TradingEnv
+    from tradingenv.contracts import ETF
+    from tradingenv.spaces import BoxPortfolio
+    from tradingenv.state import IState
+    from tradingenv.rewards import RewardLogReturn
+    from tradingenv.broker.fees import BrokerFees
+    import yfinance
+
+    # Load prices of SPY ETF from Yahoo Finance.
+    prices = yfinance.Ticker("SPY").history(period="12mo")['Close'].tz_localize(None).to_frame(ETF('SPY'))
+
+    # Instance the trading environment.
+    env = TradingEnv(
+        action_space=BoxPortfolio(prices.columns, low=-1, high=+1, as_weights=True),
+        state=IState(),
+        reward=RewardLogReturn(),
+        prices=prices,
+        initial_cash=1_000_000,
+        latency=0,                # seconds
+        steps_delay=1,            # trades are implemented with a delay on one step
+        broker_fees=BrokerFees(
+            markup=0.005,         # 0.5% broker makup on deposit rate
+            proportional=0.0001,  # 0.01% fee of traded notional
+            fixed=1,              # $1 per trade
+        ),
+    )
+
+    # OpenAI/gym protocol. Run an episode in the environment.
+    # env can be passed to RL agents of ray/rllib or stable-baselines3.
+    obs = env.reset()
+    done = False
+    while not done:
+        action = env.action_space.sample()
+        obs, reward, done, info = env.step(action)
 
 
 Installation
