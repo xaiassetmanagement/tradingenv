@@ -4,16 +4,9 @@
 Introduction
 ============
 Backtest trading strategies or train reinforcement learning agents with
-:code:`tradingenv`, an event-driven market simulator.
+:code:`tradingenv`, an event-driven market simulator that implements the
+OpenAI/gym protocol.
 
-
-Example - Backtesting
-=====================
-Thanks to the event-driven design, tradingenv is agnostic with
-respect to the type and time-frequency of the events. This means that you can
-run simulations either using irregularly sampled trade and quotes data, daily
-closing prices, monthly economic data or alternative data. Financial instruments
-supported include stocks, ETF and futures.
 
 Example - Reinforcement Learning
 ================================
@@ -31,8 +24,8 @@ and stable-baselines3_.
     from tradingenv.broker.fees import BrokerFees
     import yfinance
 
-    # Load prices of SPY ETF from Yahoo Finance.
-    prices = yfinance.Ticker("SPY").history(period="12mo")['Close'].tz_localize(None).to_frame(ETF('SPY'))
+    # Load prices of SPY ETF and TLT ETF from Yahoo Finance.
+    prices = yfinance.Tickers(['SPY', 'TLT']).history(period="12mo")['Close'].tz_localize(None)
 
     # Instance the trading environment.
     env = TradingEnv(
@@ -44,7 +37,7 @@ and stable-baselines3_.
         latency=0,                # seconds
         steps_delay=1,            # trades are implemented with a delay on one step
         broker_fees=BrokerFees(
-            markup=0.005,         # 0.5% broker makup on deposit rate
+            markup=0.005,         # 0.5% broker markup on deposit rate
             proportional=0.0001,  # 0.01% fee of traded notional
             fixed=1,              # $1 per trade
         ),
@@ -57,6 +50,34 @@ and stable-baselines3_.
     while not done:
         action = env.action_space.sample()
         obs, reward, done, info = env.step(action)
+
+
+Example - Backtesting
+=====================
+Thanks to the event-driven design, tradingenv is agnostic with
+respect to the type and time-frequency of the events. This means that you can
+run simulations either using irregularly sampled trade and quotes data, daily
+closing prices, monthly economic data or alternative data. Financial instruments
+supported include stocks, ETF and futures.
+
+.. code-block:: python
+
+    class Portfolio6040(AbstractPolicy):
+        """Implement logic of your investment strategy or RL agent here."""
+
+        def act(self, state):
+            """Invest 60% of the portfolio in SPY ETF and 40% in TLT ETF."""
+            return [0.6, 0.4]
+
+    # Run the backtest.
+    backtest = env.backtest(policy=Portfolio6040())
+
+    # The backtest object is the track record of your backtest. Some examples:
+    nlv = backtest.fig_net_liquidation_value()
+    weights = backtest.weights_target()
+    tearsheet = backtest.net_liquidation_value().tearsheet()
+    transaction_costs = backtest.fig_transaction_costs()
+
 
 
 Installation
@@ -75,9 +96,6 @@ dependencies that can be installed with
 
     pip install tradingenv[extra]
 
-You can optionally run the software tests typing :code:`pytest` in the command
-line, assuming that the folder :code:`\tests` is in the current working directory.
-
 
 Relevant projects
 =================
@@ -92,6 +110,9 @@ Relevant projects
 Developers
 ==========
 You are welcome to contribute features, examples and documentation or issues.
+
+You can run the software tests typing :code:`pytest` in the command line,
+assuming that the folder :code:`\tests` is in the current working directory.
 
 To refresh and build the documentation:
 
