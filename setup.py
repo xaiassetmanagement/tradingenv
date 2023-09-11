@@ -53,6 +53,7 @@ setuptools.setup(
     ],
     extras_require={
         "extra": [
+            "yfinance",
             "pytest",
             "pytest-mock",
             "pytest-cov",
