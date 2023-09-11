@@ -1,5 +1,4 @@
-![code coverage](https://raw.githubusercontent.com/USER/REPO/coverage-badge/coverage.svg?raw=true)
-# TODO: add test coverage badge here.
+![code coverage](https://raw.githubusercontent.com/xaiassetmanagement/tradingenv/coverage-badge/coverage.svg?raw=true)
 
 Introduction
 ============
@@ -22,24 +21,28 @@ and stable-baselines3_.
     from tradingenv.state import IState
     from tradingenv.rewards import RewardLogReturn
     from tradingenv.broker.fees import BrokerFees
+    from tradingenv.policy import AbstractPolicy
     import yfinance
 
-    # Load prices of SPY ETF and TLT ETF from Yahoo Finance.
-    prices = yfinance.Tickers(['SPY', 'TLT']).history(period="12mo")['Close'].tz_localize(None)
+    # Load prices of SPY ETF and TLT ETF from Yahoo Finance as pandas.DataFrame.
+    prices = yfinance.Tickers(['SPY', 'TLT', 'TBIL']).history(period="12mo")['Close'].tz_localize(None)
+
+    # Specify contract type.
+    prices.columns = [ETF('SPY'), ETF('TLT'), ETF('TBIL')]
 
     # Instance the trading environment.
     env = TradingEnv(
-        action_space=BoxPortfolio(prices.columns, low=-1, high=+1, as_weights=True),
+        action_space=BoxPortfolio([ETF('SPY'), ETF('TLT')], low=-1, high=+1, as_weights=True),
         state=IState(),
         reward=RewardLogReturn(),
         prices=prices,
         initial_cash=1_000_000,
-        latency=0,                # seconds
-        steps_delay=1,            # trades are implemented with a delay on one step
+        latency=0,  # seconds
+        steps_delay=1,  # trades are implemented with a delay on one step
         broker_fees=BrokerFees(
-            markup=0.005,         # 0.5% broker markup on deposit rate
+            markup=0.005,  # 0.5% broker markup on deposit rate
             proportional=0.0001,  # 0.01% fee of traded notional
-            fixed=1,              # $1 per trade
+            fixed=1,  # $1 per trade
         ),
     )
 
@@ -70,13 +73,25 @@ supported include stocks, ETF and futures.
             return [0.6, 0.4]
 
     # Run the backtest.
-    backtest = env.backtest(policy=Portfolio6040())
+    track_record = env.backtest(
+        policy=Portfolio6040(),
+        risk_free=prices['TBIL'],
+        benchmark=prices['SPY'],
+    )
 
-    # The backtest object is the track record of your backtest. Some examples:
-    nlv = backtest.fig_net_liquidation_value()
-    weights = backtest.weights_target()
-    tearsheet = backtest.net_liquidation_value().tearsheet()
-    transaction_costs = backtest.fig_transaction_costs()
+    # The track_record object stores the results of your backtest.
+    track_record.tearsheet()
+
+
+.. figure:: tests/integration/data/tearsheet.png
+
+
+.. code-block:: python
+
+    track_record.fig_net_liquidation_value()
+
+
+.. figure:: tests/integration/data/fig_net_liquidation_value.png
 
 
 
