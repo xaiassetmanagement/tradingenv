@@ -1,18 +1,16 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Introduction &#8212; tradingenv 0.1.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=039e1c02" />
+    <script src="_static/documentation_options.js?v=01f34227"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="&lt;no title&gt;" href="changelog.html" />
@@ -32,31 +30,104 @@
 
           <div class="body" role="main">
             
-  <section id="introduction">
-<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
-<p><code class="code docutils literal notranslate"><span class="pre">tradingenv</span></code> is an event-driven market simulator to backtest trading
-strategies or train reinforcement learning agents.</p>
-<p><strong>Backtesting</strong>. Thanks to the event-drive design, tradingenv is agnostic with
+  <a href="https://github.com/xaiassetmanagement/tradingenv/actions/workflows/software-tests.yml">
+    <img src="https://github.com/xaiassetmanagement/tradingenv/actions/workflows/software-tests.yml/badge.svg" alt="No message"/></a>
+<a href="https://github.com/xaiassetmanagement/tradingenv/actions">
+    <img src="https://raw.githubusercontent.com/xaiassetmanagement/tradingenv/coverage-badge/coverage.svg" alt="No message"/></a>
+<a href="https://www.python.org">
+    <img src="https://img.shields.io/pypi/pyversions/shap" alt="No message"/></a>
+<a href="https://opensource.org/licenses/Apache-2.0">
+    <img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="No message"/></a><section id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h1>
+<p>Backtest trading strategies or train reinforcement learning agents with
+<code class="code docutils literal notranslate"><span class="pre">tradingenv</span></code>, an event-driven market simulator that implements the
+OpenAI/gym protocol.</p>
+</section>
+<section id="example-reinforcement-learning">
+<h1>Example - Reinforcement Learning<a class="headerlink" href="#example-reinforcement-learning" title="Link to this heading">¶</a></h1>
+<p>The package is built upon the industry-standard <a class="reference external" href="https://github.com/openai/gym">gym</a> and therefore can be used
+in conjunction with popular reinforcement learning frameworks including <a class="reference external" href="https://docs.ray.io/en/latest/rllib/">rllib</a>
+and <a class="reference external" href="https://github.com/hill-a/stable-baselines">stable-baselines3</a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tradingenv</span> <span class="kn">import</span> <span class="n">TradingEnv</span>
+<span class="kn">from</span> <span class="nn">tradingenv.contracts</span> <span class="kn">import</span> <span class="n">ETF</span>
+<span class="kn">from</span> <span class="nn">tradingenv.spaces</span> <span class="kn">import</span> <span class="n">BoxPortfolio</span>
+<span class="kn">from</span> <span class="nn">tradingenv.state</span> <span class="kn">import</span> <span class="n">IState</span>
+<span class="kn">from</span> <span class="nn">tradingenv.rewards</span> <span class="kn">import</span> <span class="n">RewardLogReturn</span>
+<span class="kn">from</span> <span class="nn">tradingenv.broker.fees</span> <span class="kn">import</span> <span class="n">BrokerFees</span>
+<span class="kn">from</span> <span class="nn">tradingenv.policy</span> <span class="kn">import</span> <span class="n">AbstractPolicy</span>
+<span class="kn">import</span> <span class="nn">yfinance</span>
+
+<span class="c1"># Load prices of SPY ETF and TLT ETF from Yahoo Finance as pandas.DataFrame.</span>
+<span class="n">prices</span> <span class="o">=</span> <span class="n">yfinance</span><span class="o">.</span><span class="n">Tickers</span><span class="p">([</span><span class="s1">&#39;SPY&#39;</span><span class="p">,</span> <span class="s1">&#39;TLT&#39;</span><span class="p">,</span> <span class="s1">&#39;TBIL&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">history</span><span class="p">(</span><span class="n">period</span><span class="o">=</span><span class="s2">&quot;12mo&quot;</span><span class="p">)[</span><span class="s1">&#39;Close&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tz_localize</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="c1"># Specify contract type.</span>
+<span class="n">prices</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">ETF</span><span class="p">(</span><span class="s1">&#39;SPY&#39;</span><span class="p">),</span> <span class="n">ETF</span><span class="p">(</span><span class="s1">&#39;TLT&#39;</span><span class="p">),</span> <span class="n">ETF</span><span class="p">(</span><span class="s1">&#39;TBIL&#39;</span><span class="p">)]</span>
+
+<span class="c1"># Instance the trading environment.</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">TradingEnv</span><span class="p">(</span>
+    <span class="n">action_space</span><span class="o">=</span><span class="n">BoxPortfolio</span><span class="p">([</span><span class="n">ETF</span><span class="p">(</span><span class="s1">&#39;SPY&#39;</span><span class="p">),</span> <span class="n">ETF</span><span class="p">(</span><span class="s1">&#39;TLT&#39;</span><span class="p">)],</span> <span class="n">low</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">high</span><span class="o">=+</span><span class="mi">1</span><span class="p">,</span> <span class="n">as_weights</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="n">state</span><span class="o">=</span><span class="n">IState</span><span class="p">(),</span>
+    <span class="n">reward</span><span class="o">=</span><span class="n">RewardLogReturn</span><span class="p">(),</span>
+    <span class="n">prices</span><span class="o">=</span><span class="n">prices</span><span class="p">,</span>
+    <span class="n">initial_cash</span><span class="o">=</span><span class="mi">1_000_000</span><span class="p">,</span>
+    <span class="n">latency</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>  <span class="c1"># seconds</span>
+    <span class="n">steps_delay</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># trades are implemented with a delay on one step</span>
+    <span class="n">broker_fees</span><span class="o">=</span><span class="n">BrokerFees</span><span class="p">(</span>
+        <span class="n">markup</span><span class="o">=</span><span class="mf">0.005</span><span class="p">,</span>  <span class="c1"># 0.5% broker markup on deposit rate</span>
+        <span class="n">proportional</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span>  <span class="c1"># 0.01% fee of traded notional</span>
+        <span class="n">fixed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># $1 per trade</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+<span class="c1"># OpenAI/gym protocol. Run an episode in the environment.</span>
+<span class="c1"># env can be passed to RL agents of ray/rllib or stable-baselines3.</span>
+<span class="n">obs</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">while</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
+    <span class="n">action</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span>
+    <span class="n">obs</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="example-backtesting">
+<h1>Example - Backtesting<a class="headerlink" href="#example-backtesting" title="Link to this heading">¶</a></h1>
+<p>Thanks to the event-driven design, tradingenv is agnostic with
 respect to the type and time-frequency of the events. This means that you can
 run simulations either using irregularly sampled trade and quotes data, daily
 closing prices, monthly economic data or alternative data. Financial instruments
 supported include stocks, ETF and futures.</p>
-<p><strong>Reinforcement learning</strong>. The package is built upon the industry-standard <a class="reference external" href="https://github.com/openai/gym">gym</a> and therefore can be used
-in conjunction with popular reinforcement learning frameworks including <a class="reference external" href="https://docs.ray.io/en/latest/rllib/">rllib</a>
-and <a class="reference external" href="https://github.com/hill-a/stable-baselines">stable-baselines3</a>.</p>
-<p><strong>Design principles</strong></p>
-<ul class="simple">
-<li><p><strong>simple</strong>: the only entry point is the class <code class="xref py py-class docutils literal notranslate"><span class="pre">TradingEnv</span></code>.</p></li>
-<li><p><strong>fast</strong>: implemented with the python standard library and numpy.</p></li>
-<li><p><strong>tested</strong>: the test suite provides a comprehensive number of examples and use cases.</p></li>
-<li><p><strong>realistic</strong>: support for a variety of transaction costs including: bid-ask spread, cost of leverage, fixed and proportional broker commissions, latencies and slippage. Deposits can optionally yield and interest rate.</p></li>
-</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Portfolio6040</span><span class="p">(</span><span class="n">AbstractPolicy</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Implement logic of your investment strategy or RL agent here.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">act</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Invest 60% of the portfolio in SPY ETF and 40% in TLT ETF.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]</span>
+
+<span class="c1"># Run the backtest.</span>
+<span class="n">track_record</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">backtest</span><span class="p">(</span>
+    <span class="n">policy</span><span class="o">=</span><span class="n">Portfolio6040</span><span class="p">(),</span>
+    <span class="n">risk_free</span><span class="o">=</span><span class="n">prices</span><span class="p">[</span><span class="s1">&#39;TBIL&#39;</span><span class="p">],</span>
+    <span class="n">benchmark</span><span class="o">=</span><span class="n">prices</span><span class="p">[</span><span class="s1">&#39;SPY&#39;</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="c1"># The track_record object stores the results of your backtest.</span>
+<span class="n">track_record</span><span class="o">.</span><span class="n">tearsheet</span><span class="p">()</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<img alt="tests/integration/data/tearsheet.png" src="tests/integration/data/tearsheet.png" />
+</figure>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">track_record</span><span class="o">.</span><span class="n">fig_net_liquidation_value</span><span class="p">()</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<img alt="tests/integration/data/fig_net_liquidation_value.png" src="tests/integration/data/fig_net_liquidation_value.png" />
+</figure>
 </section>
 <section id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p>tradingenv supports Python 3.8 or newer versions. The
-following cmd instructions will install the latest software versions and all
-its dependencies.</p>
+<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h1>
+<p>tradingenv supports Python 3.8 or newer versions. The following command line
+will install the latest software version.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install tradingenv</span>
 </pre></div>
 </div>
@@ -65,21 +136,23 @@ dependencies that can be installed with</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install tradingenv[extra]</span>
 </pre></div>
 </div>
-<p>You can optionally run the software tests typing <code class="code docutils literal notranslate"><span class="pre">pytest</span></code> in the command
-line, assuming that the folder <code class="code docutils literal notranslate"><span class="pre">\tests</span></code> is in the current working directory.</p>
 </section>
 <section id="relevant-projects">
-<h1>Relevant projects<a class="headerlink" href="#relevant-projects" title="Permalink to this headline">¶</a></h1>
+<h1>Relevant projects<a class="headerlink" href="#relevant-projects" title="Link to this heading">¶</a></h1>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/Kismuz/btgym">btgym</a>: is an OpenAI Gym-compatible environment for</p></li>
 <li><p><a class="reference external" href="https://github.com/backtrader/backtrader">backtrader</a> backtesting/trading library, designed to provide gym-integrated framework for running reinforcement learning experiments in [close to] real world algorithmic trading environments.</p></li>
 <li><p><a class="reference external" href="https://github.com/openai/gym">gym</a>: A toolkit for developing and comparing reinforcement learning algorithms.</p></li>
+<li><p><a class="reference external" href="https://github.com/microsoft/qlib">qlib</a>: Qlib provides a strong infrastructure to support quant research.</p></li>
 <li><p><a class="reference external" href="https://docs.ray.io/en/latest/rllib/">rllib</a>: open-source library for reinforcement learning.</p></li>
 <li><p><a class="reference external" href="https://github.com/hill-a/stable-baselines">stable-baselines3</a>: is a set of reliable implementations of reinforcement learning algorithms in PyTorch.</p></li>
 </ul>
 </section>
-<section id="developer-notes">
-<h1>Developer notes<a class="headerlink" href="#developer-notes" title="Permalink to this headline">¶</a></h1>
+<section id="developers">
+<h1>Developers<a class="headerlink" href="#developers" title="Link to this heading">¶</a></h1>
+<p>You are welcome to contribute features, examples and documentation or issues.</p>
+<p>You can run the software tests typing <code class="code docutils literal notranslate"><span class="pre">pytest</span></code> in the command line,
+assuming that the folder <code class="code docutils literal notranslate"><span class="pre">tests</span></code> is in the current working directory.</p>
 <p>To refresh and build the documentation:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span> <span class="n">tests</span><span class="o">/</span><span class="n">notebooks</span>
 <span class="n">sphinx</span><span class="o">-</span><span class="n">apidoc</span> <span class="o">-</span><span class="n">f</span> <span class="o">-</span><span class="n">o</span> <span class="n">docs</span><span class="o">/</span><span class="n">source</span> <span class="n">tradingenv</span>
@@ -90,12 +163,12 @@ line, assuming that the folder <code class="code docutils literal notranslate"><
 </div>
 </section>
 <section id="changelog">
-<h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
 </section>
 <section id="package-structure">
-<h1>Package structure<a class="headerlink" href="#package-structure" title="Permalink to this headline">¶</a></h1>
+<h1>Package structure<a class="headerlink" href="#package-structure" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">tradingenv</a></li>
@@ -103,7 +176,7 @@ line, assuming that the folder <code class="code docutils literal notranslate"><
 </div>
 </section>
 <section id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading">¶</a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
@@ -134,18 +207,22 @@ line, assuming that the folder <code class="code docutils literal notranslate"><
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
-  <h3><a href="#">Table of Contents</a></h3>
-  <ul>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+  <div>
+    <h3><a href="#">Table of Contents</a></h3>
+    <ul>
 <li><a class="reference internal" href="#">Introduction</a></li>
+<li><a class="reference internal" href="#example-reinforcement-learning">Example - Reinforcement Learning</a></li>
+<li><a class="reference internal" href="#example-backtesting">Example - Backtesting</a></li>
 <li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#relevant-projects">Relevant projects</a></li>
-<li><a class="reference internal" href="#developer-notes">Developer notes</a></li>
+<li><a class="reference internal" href="#developers">Developers</a></li>
 <li><a class="reference internal" href="#changelog">Changelog</a></li>
 <li><a class="reference internal" href="#package-structure">Package structure</a></li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 
+  </div>
         </div>
       </div>
       <div class="clearer"></div>
@@ -154,8 +231,8 @@ line, assuming that the folder <code class="code docutils literal notranslate"><
       &copy;2019, Federico Fontana.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
       
       |
       <a href="_sources/index.rst.txt"

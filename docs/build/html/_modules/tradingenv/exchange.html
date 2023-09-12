@@ -1,17 +1,15 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>tradingenv.exchange &#8212; tradingenv 0.1.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=039e1c02" />
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
    
@@ -42,8 +40,10 @@
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 
-<div class="viewcode-block" id="LimitOrderBook"><a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.LimitOrderBook">[docs]</a><span class="k">class</span> <span class="nc">LimitOrderBook</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Limit order book of a single asset.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="LimitOrderBook">
+<a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.LimitOrderBook">[docs]</a>
+<span class="k">class</span> <span class="nc">LimitOrderBook</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Limit order book of a single asset.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -53,7 +53,7 @@
         <span class="n">ask_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
         <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        bid_price : float</span>
@@ -89,7 +89,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">is_alive</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Class string representation.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Class string representation.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{bid_price}</span><span class="s2"> : </span><span class="si">{ask_price}</span><span class="s2">&quot;</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="n">bid_price</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bid_price</span><span class="p">,</span>
             <span class="n">ask_price</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ask_price</span><span class="p">,</span>
@@ -97,20 +97,25 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">spread</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns bid-ask spread.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns bid-ask spread.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ask_price</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">bid_price</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mid_price</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns the middle transaction_price between the bid and the ask.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the middle transaction_price between the bid and the ask.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ask_price</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bid_price</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
 
-<div class="viewcode-block" id="LimitOrderBook.liq_price"><a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.LimitOrderBook.liq_price">[docs]</a>    <span class="k">def</span> <span class="nf">liq_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quantity</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns the execution price of selling &#39;quantity&#39; now.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="LimitOrderBook.liq_price">
+<a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.LimitOrderBook.liq_price">[docs]</a>
+    <span class="k">def</span> <span class="nf">liq_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quantity</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the execution price of selling &#39;quantity&#39; now.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">acq_price</span><span class="p">(</span><span class="o">-</span><span class="n">quantity</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="LimitOrderBook.acq_price"><a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.LimitOrderBook.acq_price">[docs]</a>    <span class="k">def</span> <span class="nf">acq_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quantity</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns the execution price of buying &#39;quantity&#39; now.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="LimitOrderBook.acq_price">
+<a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.LimitOrderBook.acq_price">[docs]</a>
+    <span class="k">def</span> <span class="nf">acq_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quantity</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the execution price of buying &#39;quantity&#39; now.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">quantity</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bid_price</span>
         <span class="k">elif</span> <span class="n">quantity</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -120,7 +125,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unexpected sign: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">quantity</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="LimitOrderBook.update"><a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.LimitOrderBook.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">EventNBBO</span><span class="p">):</span>
+
+<div class="viewcode-block" id="LimitOrderBook.update">
+<a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.LimitOrderBook.update">[docs]</a>
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">EventNBBO</span><span class="p">):</span>
         <span class="c1"># NOTE: this Exchange is responsible to call this method rather than</span>
         <span class="c1"># making LOB an Observe for lecagy reasons.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bid_price</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">bid_price</span>
@@ -137,24 +145,34 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s2">&quot;bid_size&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bid_size</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s2">&quot;ask_size&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ask_size</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="LimitOrderBook.terminate"><a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.LimitOrderBook.terminate">[docs]</a>    <span class="k">def</span> <span class="nf">terminate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">EventContractDiscontinued</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Reset and stop quotes in the lob but keep history.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="LimitOrderBook.terminate">
+<a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.LimitOrderBook.terminate">[docs]</a>
+    <span class="k">def</span> <span class="nf">terminate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">EventContractDiscontinued</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset and stop quotes in the lob but keep history.&quot;&quot;&quot;</span>
         <span class="n">history</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span>
         <span class="bp">self</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">history</span> <span class="o">=</span> <span class="n">history</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">time</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_alive</span> <span class="o">=</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="LimitOrderBook.to_frame"><a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.LimitOrderBook.to_frame">[docs]</a>    <span class="k">def</span> <span class="nf">to_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">what</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;mid_price&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+
+<div class="viewcode-block" id="LimitOrderBook.to_frame">
+<a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.LimitOrderBook.to_frame">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">what</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;mid_price&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
             <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="n">what</span><span class="p">],</span>
             <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">],</span>
             <span class="n">name</span><span class="o">=</span><span class="n">what</span><span class="p">,</span>
-        <span class="p">)</span></div></div>
+        <span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="Exchange"><a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.Exchange">[docs]</a><span class="k">class</span> <span class="nc">Exchange</span><span class="p">(</span><span class="n">Observer</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;An aggregation of limit order books.</span>
+
+<div class="viewcode-block" id="Exchange">
+<a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.Exchange">[docs]</a>
+<span class="k">class</span> <span class="nc">Exchange</span><span class="p">(</span><span class="n">Observer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;An aggregation of limit order books.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -164,7 +182,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; from tradingenv.exchange import Exchange</span>
@@ -198,7 +216,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">last_update</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Class string representation.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Class string representation.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span>
             <span class="p">{</span><span class="n">contract_id</span><span class="p">:</span> <span class="nb">repr</span><span class="p">(</span><span class="n">book</span><span class="p">)</span>
              <span class="k">for</span> <span class="n">contract_id</span><span class="p">,</span> <span class="n">book</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_books</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
@@ -207,43 +225,63 @@
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns number of limit order books in the exchange.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns number of limit order books in the exchange.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_books</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AbstractContract</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">LimitOrderBook</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns the limit order book associated with contract_id.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the limit order book associated with contract_id.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">AbstractContract</span><span class="p">):</span>
             <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">static_hashing</span><span class="p">()</span>  <span class="c1"># TODO: Test</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_books</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
-<div class="viewcode-block" id="Exchange.bid_prices"><a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.Exchange.bid_prices">[docs]</a>    <span class="k">def</span> <span class="nf">bid_prices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">AbstractContract</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return a np.array with mid prices of the provided contract IDs.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Exchange.bid_prices">
+<a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.Exchange.bid_prices">[docs]</a>
+    <span class="k">def</span> <span class="nf">bid_prices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">AbstractContract</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a np.array with mid prices of the provided contract IDs.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">bid_price</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="Exchange.ask_prices"><a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.Exchange.ask_prices">[docs]</a>    <span class="k">def</span> <span class="nf">ask_prices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">AbstractContract</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return a np.array with mid prices of the provided contract IDs.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Exchange.ask_prices">
+<a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.Exchange.ask_prices">[docs]</a>
+    <span class="k">def</span> <span class="nf">ask_prices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">AbstractContract</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a np.array with mid prices of the provided contract IDs.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">ask_price</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="Exchange.mid_prices"><a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.Exchange.mid_prices">[docs]</a>    <span class="k">def</span> <span class="nf">mid_prices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">AbstractContract</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return a np.array with mid prices of the provided contract IDs.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Exchange.mid_prices">
+<a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.Exchange.mid_prices">[docs]</a>
+    <span class="k">def</span> <span class="nf">mid_prices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">AbstractContract</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a np.array with mid prices of the provided contract IDs.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">mid_price</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="Exchange.acq_prices"><a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.Exchange.acq_prices">[docs]</a>    <span class="k">def</span> <span class="nf">acq_prices</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Exchange.acq_prices">
+<a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.Exchange.acq_prices">[docs]</a>
+    <span class="k">def</span> <span class="nf">acq_prices</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">AbstractContract</span><span class="p">],</span> <span class="n">signs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">acq_price</span><span class="p">(</span><span class="n">sign</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">sign</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">signs</span><span class="p">)])</span></div>
 
-<div class="viewcode-block" id="Exchange.liq_prices"><a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.Exchange.liq_prices">[docs]</a>    <span class="k">def</span> <span class="nf">liq_prices</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Exchange.liq_prices">
+<a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.Exchange.liq_prices">[docs]</a>
+    <span class="k">def</span> <span class="nf">liq_prices</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">AbstractContract</span><span class="p">],</span> <span class="n">signs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">acq_prices</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="o">-</span><span class="n">signs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Exchange.spreads"><a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.Exchange.spreads">[docs]</a>    <span class="k">def</span> <span class="nf">spreads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">AbstractContract</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return a np.array with spreads of the provided contract IDs.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Exchange.spreads">
+<a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.Exchange.spreads">[docs]</a>
+    <span class="k">def</span> <span class="nf">spreads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">AbstractContract</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a np.array with spreads of the provided contract IDs.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">spread</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="Exchange.process_EventNBBO"><a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.Exchange.process_EventNBBO">[docs]</a>    <span class="k">def</span> <span class="nf">process_EventNBBO</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">EventNBBO</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Exchange.process_EventNBBO">
+<a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.Exchange.process_EventNBBO">[docs]</a>
+    <span class="k">def</span> <span class="nf">process_EventNBBO</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">EventNBBO</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Process an EventNBBO, representing an update of market prices and</span>
 <span class="sd">        sizes in the limit order book.</span>
 
@@ -258,10 +296,16 @@
             <span class="n">book</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">last_update</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">time</span></div>
 
-<div class="viewcode-block" id="Exchange.process_EventContractDiscontinued"><a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.Exchange.process_EventContractDiscontinued">[docs]</a>    <span class="k">def</span> <span class="nf">process_EventContractDiscontinued</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">EventContractDiscontinued</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Exchange.process_EventContractDiscontinued">
+<a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.Exchange.process_EventContractDiscontinued">[docs]</a>
+    <span class="k">def</span> <span class="nf">process_EventContractDiscontinued</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">EventContractDiscontinued</span><span class="p">):</span>
         <span class="bp">self</span><span class="p">[</span><span class="n">event</span><span class="o">.</span><span class="n">contract</span><span class="p">]</span><span class="o">.</span><span class="n">terminate</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Exchange.to_frame"><a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.Exchange.to_frame">[docs]</a>    <span class="k">def</span> <span class="nf">to_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contracts</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">AbstractContract</span><span class="p">],</span> <span class="n">join</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;outer&#39;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Exchange.to_frame">
+<a class="viewcode-back" href="../../tradingenv.html#tradingenv.exchange.Exchange.to_frame">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contracts</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">AbstractContract</span><span class="p">],</span> <span class="n">join</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;outer&#39;</span><span class="p">):</span>
         <span class="c1"># TODO: Test.</span>
         <span class="c1"># An alternative implementation, but not faster due to slow .from_dict</span>
         <span class="c1">#contracts = result.policy._returns.columns</span>
@@ -280,7 +324,9 @@
                 <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;columns&#39;</span><span class="p">,</span> <span class="n">join</span><span class="o">=</span><span class="n">join</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;columns&#39;</span><span class="p">,</span> <span class="n">join</span><span class="o">=</span><span class="n">join</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+</div>
+
 </pre></div>
 
           </div>
@@ -306,7 +352,7 @@
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -315,8 +361,8 @@
       &copy;2019, Federico Fontana.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
       
     </div>
 

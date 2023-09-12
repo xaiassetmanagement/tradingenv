@@ -1,17 +1,15 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../../../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>tradingenv.broker.broker &#8212; tradingenv 0.1.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=039e1c02" />
+    <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
    
@@ -47,12 +45,17 @@
 <span class="n">SECONDS_IN_YEAR</span> <span class="o">=</span> <span class="mi">365</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span>
 
 
-<div class="viewcode-block" id="EndOfEpisodeError"><a class="viewcode-back" href="../../../tradingenv.broker.html#tradingenv.broker.broker.EndOfEpisodeError">[docs]</a><span class="k">class</span> <span class="nc">EndOfEpisodeError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Raised when the net liquidation state of the account goes below zero.</span>
+<div class="viewcode-block" id="EndOfEpisodeError">
+<a class="viewcode-back" href="../../../tradingenv.broker.html#tradingenv.broker.broker.EndOfEpisodeError">[docs]</a>
+<span class="k">class</span> <span class="nc">EndOfEpisodeError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when the net liquidation state of the account goes below zero.</span>
 <span class="sd">    This exception will trigger an end of episode.&quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="Context"><a class="viewcode-back" href="../../../tradingenv.broker.html#tradingenv.broker.broker.Context">[docs]</a><span class="k">class</span> <span class="nc">Context</span><span class="p">:</span>
+
+<div class="viewcode-block" id="Context">
+<a class="viewcode-back" href="../../../tradingenv.broker.html#tradingenv.broker.broker.Context">[docs]</a>
+<span class="k">class</span> <span class="nc">Context</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nlv</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">nr_contracts</span><span class="p">,</span>
                  <span class="n">margins</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nlv</span> <span class="o">=</span> <span class="n">nlv</span>
@@ -71,8 +74,11 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Broker"><a class="viewcode-back" href="../../../tradingenv.broker.html#tradingenv.broker.broker.Broker">[docs]</a><span class="k">class</span> <span class="nc">Broker</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;This class allows to simulate a sequence of _rebalancing requests.</span>
+
+<div class="viewcode-block" id="Broker">
+<a class="viewcode-back" href="../../../tradingenv.broker.html#tradingenv.broker.broker.Broker">[docs]</a>
+<span class="k">class</span> <span class="nc">Broker</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This class allows to simulate a sequence of _rebalancing requests.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -93,7 +99,7 @@
         <span class="n">fees</span><span class="p">:</span> <span class="n">IBrokerFees</span> <span class="o">=</span> <span class="n">BrokerFees</span><span class="p">(),</span>
         <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-7</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        exchange : Exchange</span>
@@ -127,8 +133,10 @@
     <span class="k">def</span> <span class="nf">holdings_margins</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">AbstractContract</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_holdings_margins</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Broker.rebalance"><a class="viewcode-back" href="../../../tradingenv.broker.html#tradingenv.broker.broker.Broker.rebalance">[docs]</a>    <span class="k">def</span> <span class="nf">rebalance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rebalancing</span><span class="p">:</span> <span class="n">Rebalancing</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Given a _rebalancing object, execute all trades needed to perform the</span>
+<div class="viewcode-block" id="Broker.rebalance">
+<a class="viewcode-back" href="../../../tradingenv.broker.html#tradingenv.broker.broker.Broker.rebalance">[docs]</a>
+    <span class="k">def</span> <span class="nf">rebalance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rebalancing</span><span class="p">:</span> <span class="n">Rebalancing</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a _rebalancing object, execute all trades needed to perform the</span>
 <span class="sd">        _rebalancing.</span>
 
 <span class="sd">        Developer notes</span>
@@ -152,8 +160,11 @@
         <span class="n">rebalancing</span><span class="o">.</span><span class="n">context_post</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">track_record</span><span class="o">.</span><span class="n">_checkpoint</span><span class="p">(</span><span class="n">rebalancing</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Broker.transact"><a class="viewcode-back" href="../../../tradingenv.broker.html#tradingenv.broker.broker.Broker.transact">[docs]</a>    <span class="k">def</span> <span class="nf">transact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trade</span><span class="p">:</span> <span class="n">Trade</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Broker.transact">
+<a class="viewcode-back" href="../../../tradingenv.broker.html#tradingenv.broker.broker.Broker.transact">[docs]</a>
+    <span class="k">def</span> <span class="nf">transact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trade</span><span class="p">:</span> <span class="n">Trade</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        trade : Trade</span>
@@ -209,10 +220,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_marking_to_market_price</span><span class="p">[</span><span class="n">trade</span><span class="o">.</span><span class="n">contract</span><span class="p">]</span> <span class="o">=</span> <span class="n">trade</span><span class="o">.</span><span class="n">acq_price</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">marking_to_market</span><span class="p">(</span><span class="n">trade</span><span class="o">.</span><span class="n">contract</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Broker.marking_to_market"><a class="viewcode-back" href="../../../tradingenv.broker.html#tradingenv.broker.broker.Broker.marking_to_market">[docs]</a>    <span class="k">def</span> <span class="nf">marking_to_market</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Broker.marking_to_market">
+<a class="viewcode-back" href="../../../tradingenv.broker.html#tradingenv.broker.broker.Broker.marking_to_market">[docs]</a>
+    <span class="k">def</span> <span class="nf">marking_to_market</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">contract</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">AbstractContract</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">AbstractContract</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        contract : Union[AbstractContract, Sequence[AbstractContract]]</span>
@@ -262,8 +276,11 @@
                     <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">contract</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_holdings_margins</span><span class="p">[</span><span class="n">contract</span><span class="p">])</span>
                 <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Broker.holdings_values"><a class="viewcode-back" href="../../../tradingenv.broker.html#tradingenv.broker.broker.Broker.holdings_values">[docs]</a>    <span class="k">def</span> <span class="nf">holdings_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;notional&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">AbstractContract</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Returns np.array with state of all positions within the portfolio</span>
+
+<div class="viewcode-block" id="Broker.holdings_values">
+<a class="viewcode-back" href="../../../tradingenv.broker.html#tradingenv.broker.broker.Broker.holdings_values">[docs]</a>
+    <span class="k">def</span> <span class="nf">holdings_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;notional&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">AbstractContract</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns np.array with state of all positions within the portfolio</span>
 <span class="sd">        (cash included) in base currency. The array has as many entries as</span>
 <span class="sd">        traded contracts.</span>
 <span class="sd">        Notional values, so transaction_price * multiplier.&quot;&quot;&quot;</span>
@@ -291,8 +308,11 @@
             <span class="n">holdings_values</span><span class="p">[</span><span class="n">contract</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">return</span> <span class="n">holdings_values</span></div>
 
-<div class="viewcode-block" id="Broker.holdings_weights"><a class="viewcode-back" href="../../../tradingenv.broker.html#tradingenv.broker.broker.Broker.holdings_weights">[docs]</a>    <span class="k">def</span> <span class="nf">holdings_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">AbstractContract</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Relative weights of the notional traded value over NLV.</span>
+
+<div class="viewcode-block" id="Broker.holdings_weights">
+<a class="viewcode-back" href="../../../tradingenv.broker.html#tradingenv.broker.broker.Broker.holdings_weights">[docs]</a>
+    <span class="k">def</span> <span class="nf">holdings_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">AbstractContract</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Relative weights of the notional traded value over NLV.</span>
 <span class="sd">        Returns current weights of the portfolio as positions values</span>
 <span class="sd">        (including market spread) divided by the net liquidation state of the</span>
 <span class="sd">        account (including market spread).&quot;&quot;&quot;</span>
@@ -303,8 +323,11 @@
             <span class="k">for</span> <span class="n">contract</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">holdings_notional_values</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="p">}</span></div>
 
-<div class="viewcode-block" id="Broker.net_liquidation_value"><a class="viewcode-back" href="../../../tradingenv.broker.html#tradingenv.broker.broker.Broker.net_liquidation_value">[docs]</a>    <span class="k">def</span> <span class="nf">net_liquidation_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raise_if_broke</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Broker.net_liquidation_value">
+<a class="viewcode-back" href="../../../tradingenv.broker.html#tradingenv.broker.broker.Broker.net_liquidation_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">net_liquidation_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raise_if_broke</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        raise_if_broke : bool</span>
@@ -325,8 +348,11 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">nlv</span></div>
 
-<div class="viewcode-block" id="Broker.accrued_interest"><a class="viewcode-back" href="../../../tradingenv.broker.html#tradingenv.broker.broker.Broker.accrued_interest">[docs]</a>    <span class="k">def</span> <span class="nf">accrued_interest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">now</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">accrue</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Broker.accrued_interest">
+<a class="viewcode-back" href="../../../tradingenv.broker.html#tradingenv.broker.broker.Broker.accrued_interest">[docs]</a>
+    <span class="k">def</span> <span class="nf">accrued_interest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">now</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">accrue</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        now : datetime</span>
@@ -367,14 +393,19 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_last_accrual</span> <span class="o">=</span> <span class="n">now</span>
         <span class="k">return</span> <span class="n">accrued_interest</span></div>
 
-<div class="viewcode-block" id="Broker.context"><a class="viewcode-back" href="../../../tradingenv.broker.html#tradingenv.broker.broker.Broker.context">[docs]</a>    <span class="k">def</span> <span class="nf">context</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Context</span><span class="p">:</span>
+
+<div class="viewcode-block" id="Broker.context">
+<a class="viewcode-back" href="../../../tradingenv.broker.html#tradingenv.broker.broker.Broker.context">[docs]</a>
+    <span class="k">def</span> <span class="nf">context</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Context</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Context</span><span class="p">(</span>
             <span class="n">nlv</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">net_liquidation_value</span><span class="p">(),</span>
             <span class="n">weights</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">holdings_weights</span><span class="p">(),</span>
             <span class="n">values</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">holdings_values</span><span class="p">(),</span>
             <span class="n">nr_contracts</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">holdings_quantity</span><span class="p">,</span>
             <span class="n">margins</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">holdings_margins</span><span class="p">,</span>
-        <span class="p">)</span></div></div>
+        <span class="p">)</span></div>
+</div>
+
 </pre></div>
 
           </div>
@@ -400,7 +431,7 @@
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -409,8 +440,8 @@
       &copy;2019, Federico Fontana.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
       
     </div>
 

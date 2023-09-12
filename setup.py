@@ -60,6 +60,7 @@ setuptools.setup(
             "openpyxl",
             "jupyterlab",
             "nbconvert",  # https://stackoverflow.com/questions/65376052
+            "Sphinx",
         ],
     },
     package_data={"tradingenv": package_data_paths},
