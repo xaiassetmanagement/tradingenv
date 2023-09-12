@@ -13,14 +13,28 @@
         <img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="No message"/></a>
 
 
-
-
-
 Introduction
 ============
 Backtest trading strategies or train reinforcement learning agents with
 :code:`tradingenv`, an event-driven market simulator that implements the
 OpenAI/gym protocol.
+
+
+Installation
+============
+tradingenv supports Python 3.7 or newer versions. The following command line
+will install the latest software version.
+
+.. code-block:: console
+
+    pip install tradingenv
+
+Notebooks, software tests and building the documentation require extra
+dependencies that can be installed with
+
+.. code-block:: console
+
+    pip install tradingenv[extra]
 
 
 Example - Reinforcement Learning
@@ -109,23 +123,6 @@ supported include stocks, ETF and futures.
 
 .. figure:: docs/source/images/fig_net_liquidation_value.png
 
-
-
-Installation
-============
-tradingenv supports Python 3.8 or newer versions. The following command line
-will install the latest software version.
-
-.. code-block:: console
-
-    pip install tradingenv
-
-Notebooks, software tests and building the documentation require extra
-dependencies that can be installed with
-
-.. code-block:: console
-
-    pip install tradingenv[extra]
 
 
 Relevant projects
