@@ -93,7 +93,7 @@ supported include stocks, ETF and futures.
     track_record.tearsheet()
 
 
-.. figure:: tests/integration/data/tearsheet.png
+.. figure:: docs/source/images/tearsheet.png
 
 
 .. code-block:: python
@@ -101,7 +101,7 @@ supported include stocks, ETF and futures.
     track_record.fig_net_liquidation_value()
 
 
-.. figure:: tests/integration/data/fig_net_liquidation_value.png
+.. figure:: docs/source/images/fig_net_liquidation_value.png
 
 
 
