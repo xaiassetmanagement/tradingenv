@@ -1,7 +1,13 @@
 .. raw:: html
 
+    <a href="https://github.com/xaiassetmanagement/tradingenv/actions/workflows/software-tests.yml">
+        <img src="https://github.com/xaiassetmanagement/tradingenv/actions/workflows/software-tests.yml/badge.svg" alt="No message"/></a>
     <a href="https://github.com/xaiassetmanagement/tradingenv/actions">
         <img src="https://raw.githubusercontent.com/xaiassetmanagement/tradingenv/coverage-badge/coverage.svg" alt="No message"/></a>
+    <a href="https://www.python.org">
+        <img src="https://img.shields.io/pypi/pyversions/shap" alt="No message"/></a>
+    <a href="https://opensource.org/licenses/Apache-2.0">
+        <img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="No message"/></a>
 
 
 Introduction
