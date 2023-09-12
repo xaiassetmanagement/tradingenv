@@ -1,5 +1,8 @@
 ![code coverage](https://raw.githubusercontent.com/xaiassetmanagement/tradingenv/coverage-badge/coverage.svg?raw=true)
 
+![Tests](https://github.com/shap/shap/actions/workflows/run_tests.yml/badge.svg)
+
+
 Introduction
 ============
 Backtest trading strategies or train reinforcement learning agents with

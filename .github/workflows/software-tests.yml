@@ -11,8 +11,10 @@ on:
   pull_request:
     branches: [ "master" ]
 
+# write permissions are needed to generate cov badge as per:
+#   https://github.com/JamesIves/github-pages-deploy-action
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
