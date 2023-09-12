@@ -49,7 +49,6 @@ setuptools.setup(
         "scikit-learn",
         "statsmodels",
         "tqdm",
-        # "scipy",
     ],
     extras_require={
         "extra": [

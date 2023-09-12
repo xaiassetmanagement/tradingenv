@@ -135,7 +135,7 @@ release = __version__
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'env'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -165,7 +165,7 @@ html_theme_options = {'show_related': False}
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so basis_naive_tm1 file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['.static']
+# html_static_path = ['.static']
 
 # Custom sidebar templates, must be basis_naive_tm1 dictionary that maps document _names
 # to template _names.
@@ -242,10 +242,8 @@ texinfo_documents = [
 ]
 #html_theme_options = {"fixed_sidebar": True}
 
-
-
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None}
+# intersphinx_mapping = {'https://docs.python.org/': None}
 
 #class_members_toctree = False
 #numpydoc_show_class_members = False
