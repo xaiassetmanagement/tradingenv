@@ -1,6 +1,7 @@
-![code coverage](https://raw.githubusercontent.com/xaiassetmanagement/tradingenv/coverage-badge/coverage.svg?raw=true)
+.. raw:: html
 
-![Tests](https://github.com/shap/shap/actions/workflows/run_tests.yml/badge.svg)
+    <a href="https://github.com/xaiassetmanagement/tradingenv/actions">
+        <img src="https://raw.githubusercontent.com/xaiassetmanagement/tradingenv/coverage-badge/coverage.svg" alt="No message"/></a>
 
 
 Introduction
