@@ -120,7 +120,10 @@ class PandasMetrics(NDFrame):
         """
         # https://github.com/pandas-dev/pandas/issues/6389
         level = self.level()
-        simple_returns = level.pct_change(fill_method=None)
+        # FutureWarning: The 'fill_method' and 'limit' keywords in
+        # Series.pct_change are deprecated and will be removed in a future
+        # version. Call ffill before calling pct_change instead.
+        simple_returns = level.pct_change()  # fill_method=None
         return simple_returns.iloc[1:]
 
     @to_pandas
@@ -543,7 +546,7 @@ class PandasMetrics(NDFrame):
             # Set the minimum of each to 0
             diff = diff.clip(lower=0)
             # Return the sum of the different to the power of order
-            return np.sum(diff ** order) / len(returns) * np.sqrt(BDAYS)
+            return np.sum(diff ** order, axis=0) / len(returns) * np.sqrt(BDAYS)
 
         excess_cagr = self.excess_cagr(risk_free)
         return excess_cagr / lpm(self.simple_returns(), threshold, 1)

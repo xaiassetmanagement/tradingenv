@@ -104,11 +104,3 @@ class TestFeaturesTransformers:
         scaler.mean_, scaler.scale_, scaler.var_ = mean, scale, var
         actual = scaler.transform(X)
         np.testing.assert_equal(actual, expected)
-
-    def test_(self):
-        pass
-        # scaler.min_
-        # scaler.scale_
-        # scaler.data_min_
-        # scaler.data_max_
-        # scaler.data_range_

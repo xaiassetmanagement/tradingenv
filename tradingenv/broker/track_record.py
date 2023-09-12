@@ -185,6 +185,23 @@ class TrackRecord:
             df = df.cumsum().join(self.net_liquidation_value())
         return df
 
+    def tearsheet(self):
+        try:
+            risk_free = self.risk_free
+        except AttributeError:
+            risk_free = 0
+        try:
+            benchmark = self.benchmark
+        except AttributeError:
+            benchmark = None
+        nlv = self.net_liquidation_value()
+        tearsheet = nlv.tearsheet(
+            risk_free=risk_free,
+            benchmark=benchmark,
+            weights=self.weights_target(),
+        )
+        return tearsheet
+
     def to_excel(self, path):
         """Export track record to excel."""
         nlv = self.net_liquidation_value()

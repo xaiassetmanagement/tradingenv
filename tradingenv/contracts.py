@@ -419,7 +419,8 @@ class FutureChain(AbstractContract):
 
     def _lead_contract_idx(self, now: datetime = None) -> int:
         """Returns the index of the leading contract from self.contracts."""
-        now = self.now if now is None else now
+        if now is None:
+            now = self.now
         idx = bisect_right(self._last_trading_dates, now)
         idx += self._month
         return idx

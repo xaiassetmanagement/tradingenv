@@ -10,8 +10,7 @@ class TestReadMe:
         import yfinance
 
         # Load prices of SPY ETF and TLT ETF from Yahoo Finance as pandas.DataFrame.
-        prices = yfinance.Tickers(['SPY', 'TLT', 'TBIL']).history(period="12mo")[
-            'Close'].tz_localize(None)
+        prices = yfinance.Tickers(['SPY', 'TLT', 'TBIL']).history(period="12mo", progress=False)['Close'].tz_localize(None)
 
         # Specify contract type.
         prices.columns = [ETF('SPY'), ETF('TLT'), ETF('TBIL')]
@@ -41,7 +40,6 @@ class TestReadMe:
             action = env.action_space.sample()
             obs, reward, done, info = env.step(action)
 
-
         class Portfolio6040(AbstractPolicy):
             """Implement logic of your investment strategy or RL agent here."""
 
@@ -54,6 +52,7 @@ class TestReadMe:
             policy=Portfolio6040(),
             risk_free=prices['TBIL'],
             benchmark=prices['SPY'],
+            progress_bar=False,
         )
 
         # The track_record object stores the results of your backtest.
