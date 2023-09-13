@@ -25,8 +25,8 @@ for root, dirs, files in os.walk(os.path.join(here, "tradingenv")):
 setuptools.setup(
     name=__package__,
     version=__version__,
-    description="A trading environment for reinforcement "
-    "learning agents, inspired by the OpenAI/gym protocol.",
+    description="Backtest trading strategies or train reinforcement learning "
+                "agents with and event-driven market simulator.",
     long_description=long_description,
     url="https://github.com/xaiassetmanagement/tradingenv",
     author="Federico Fontana",
@@ -36,9 +36,9 @@ setuptools.setup(
         "Intended Audience :: Developers",
         "Topic :: Office/Business :: Financial :: Investment",
         "License :: OSI Approved :: Apache Software License",
-        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python",
     ],
-    keywords="trading gym",
+    keywords=["trading", "investment", "finance", "backtest", "reinforcement-learning", "gym"],
     packages=setuptools.find_packages(exclude=["docs", "notebooks", "tests"]),
     install_requires=[
         "exchange_calendars",
