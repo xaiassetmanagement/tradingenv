@@ -1,5 +1,11 @@
+.. figure:: docs/source/images/logo.png
+    :align: center
+
+
+
 .. raw:: html
 
+    <br/>
     <a href="https://https://github.com/xaiassetmanagement/tradingenv/actions/workflows/build-docs.yml">
         <img src="https://github.com/xaiassetmanagement/tradingenv/actions/workflows/build-docs.yml/badge.svg" alt="No message"/></a>
     <a href="https://github.com/xaiassetmanagement/tradingenv/actions/workflows/software-tests.yml">
