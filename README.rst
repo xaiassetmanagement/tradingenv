@@ -1,4 +1,4 @@
-.. figure:: /home/federico/Downloads/Thumbnail-for-Blogpost-(1).png
+.. figure:: docs/source/images/logo-background-cropped.png
     :align: center
 
 
