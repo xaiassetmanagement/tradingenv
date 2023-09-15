@@ -1,4 +1,4 @@
-.. figure:: docs/source/images/logo.png
+.. figure:: /home/federico/Downloads/Thumbnail-for-Blogpost-(1).png
     :align: center
 
 
@@ -17,7 +17,6 @@
         <img src="https://img.shields.io/pypi/pyversions/shap" alt="No message"/></a>
     <a href="https://opensource.org/licenses/Apache-2.0">
         <img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="No message"/></a>
-
 
 Introduction
 ============
