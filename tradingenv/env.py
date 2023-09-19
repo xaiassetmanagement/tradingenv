@@ -44,45 +44,91 @@ class TradingEnv(gym.Env):
 
     def __init__(
         self,
-        action_space: Union[PortfolioSpace, list],
-        state: Union[IState, Sequence[Feature]] = IState(),
-        reward: Union[AbstractReward, str] = RewardSimpleReturn(),
+        action_space: Union[list[AbstractContract], PortfolioSpace],
+        state: Union[IState, list[Feature]] = IState(),
+        reward: Union[str, AbstractReward] = RewardSimpleReturn(),
         transmitter: AbstractTransmitter = AsynchronousTransmitter(),
         prices: pd.DataFrame = None,
         initial_cash: float = 100,
         broker_fees: IBrokerFees = BrokerFees(),
         latency: float = 0,
-        fit_transformers: Union[bool, dict] = False,
-        # episode_length: int = None,
         steps_delay: int = 0,
+        fit_transformers: Union[bool, dict] = False,
         sampling_span: int = None
     ):
         """
         Parameters
         ----------
-        action_space
-            An instance of PortfolioDiscrete or PortfolioContinuous,
-            characterizing the domain of the action observation_space (target weights of
-            the portfolio with eventual constraints) and contracts to be traded.
-            An equivalent way to use BoxPortfolio consists in providing
-            a sequence of contract _names.
-        state : State
-            A State instance or a list of Features.
-        reward : Union[AbstractReward, str]
-            The reward function, evaluated at every step. This could either
-            be a custom reward (AbstractReward interface implementation) or
-            the id of an existing reward (e.g. 'PnL'). For the full list
-            of supported rewards see trading_env.rewards.
+        action_space: Union[list[AbstractContract], PortfolioSpace]
+            This determines the investment universe of assets that can be
+            traded during the simulations, as well any extra logic necessary to
+            map an action to a portfolio of assets. To define a continuous
+            long-only and unleveraged trading environment, it sufficient to
+            pass a list of contracts to be traded. Supported contracts include:
+            - tradingenv.contracts.Stock
+            - tradingenv.contracts.ETF
+            - tradingenv.contracts.Index
+            - tradingenv.contracts.Future
+            - tradingenv.contracts.FutureChain
+            - tradingenv.contracts.AbstractContract for extra customisation.
+            If you wish to allow short-selling or leveraged positions, you
+            should pass one of the following instances:
+            - tradingenv.spaces.DiscretePortfolio for discrete spaces
+            - tradingenv.spaces.BoxPortfolio for continuous spaces
+            - tradingenv.spaces.PortfolioSpace for extra customisation
+            NOTE: there must be market data available for each contract being
+            traded. Market data can be passed using the argument `prices` or
+            `transmitter`.
+        state: Union[IState, list[Feature]]
+            This determines the observation space, which is empty by default.
+            For backtesting purposes you don't need to specify this argument.
+            For reinforcement learning training purposes, you can pass an
+            tradingenv.state.IState object or a list of
+            tradingenv.features.Feature.
+        reward : Union[str, AbstractReward]
+            The reward function to be used for reinforcement learning training.
+            For backtesting purposes you don't need to specify this argument.
+            Supported reward functions include:
+            - tradingenv.rewards.RewardPnL
+            - tradingenv.rewards.RewardLogReturn
+            - tradingenv.rewards.RewardSimpleReturn
+            - tradingenv.rewards.RewardDifferentialSharpeRatio
+            - tradingenv.rewards.AbstractReward for extra customisation.
         transmitter : Transmitter
-            Object taking care of delivering events during the interaction
-            with the environment (e.g. market prices).
+            This objects takes care of transmitting data and events at the right
+            time during the simulations, as well as setting the timesteps
+            at which the portfolio can be rebalanced. Use this argument to pass
+            market prices, macroeconomic data or alternative data.
         prices : pd.DataFrame
-            A pandas.DataFrame whose columns are asset _names, index are
-            timestamps and values are prices. This optional argument allows
-            you to avoid specifying a transmitter.
+            If your simulations only require market data, you can specify this
+            argument instead of `transmitter`. Market prices can be passed as
+            a pandas.DataFrame whose columns are contracts, index are
+            timestamps and values are prices. However, this option assumes
+            that bid-ask spread is zero. You are therefore recommended to use
+            transmitter for more realistic simulations.
+        initial_cash : float
+            Each simulation starts with this amount of cash, 100 by default.
         broker_fees: IBrokerFees
-            Instance AbstractBrokerFees with custom initialization or implement
-            your own AbstractBrokerFees to set transaction costs.
+            The simulation assumes absence of transaction costs by default. To
+            set transaction costs including broker commissions, broker markup or
+            a rate paid on idle cash you can pass an instance of
+            tradingenv.broker.fees.BrokerFees.
+        latency : float
+            It defines the delay in seconds between the timestep at which the
+            portfolio rebalancing decision was made and the time at which the
+            trades to rebalance the portfolio are executed. This option can
+            be useful when dealing with intraday data. For daily or even slower
+            data you should use `steps_delay` instead.
+        steps_delay : int
+            Unlike `latency` which is expressed in seconds, this is expressed
+            in amount of timesteps. For example, if a daily rebalancing
+            frequency has been specified in the transmitter, then a rebalancing
+            established in time t will be executed in t+1. This is set to
+            zero by default to avoid surprised, but it is recommended to set
+            this to 1 for more conservative and realistic simulations.
+        fit_transformers : bool
+            False by default. If True, observations defined by the `state`
+            argument are using a class form sklearn.preprocessing.
         sampling_span: int
             This argument is used only if episode_length is passed in
             TrandingEnv.reset. If specified, the episode start date is sampled
@@ -90,8 +136,8 @@ class TradingEnv(gym.Env):
             number of recent timesteps that captures ~70% of the likelihood of
             sampling a start date from such window. Uniform distribution is
             used by default if this parameter is not provided. It's useful to
-            specify a value if you wish to train RL agents to overweight
-            observations in the more recent past.
+            specify a value if you wish to train reinforcement learning agents
+            that overweight observations from the more recent past.
         """
         if not isinstance(action_space, PortfolioSpace):
             # action observation_space is assumed to be a sequence of contracts.
@@ -105,7 +151,6 @@ class TradingEnv(gym.Env):
         self.action_space: PortfolioSpace = action_space
         self.state = IState(state) if isinstance(state, list) else state
         self.observation_space = self.state.space
-        # self.episode_length = episode_length  # TODO: test
         self._verify_state = True
         self._reward = make_reward(reward)
         self._initial_cash = initial_cash
@@ -122,8 +167,9 @@ class TradingEnv(gym.Env):
             self._transmitter.add_events(contract.make_events())
         self._transmitter._create_partitions(latency)
 
-        # TODO: raise if there is a callback method registered to an event
-        #  which does not exist anywhere in the transmitter.
+        # TODO: to improve UX, raise and error if there is a callback method
+        #  registered to an event which does not exist anywhere in the
+        #  transmitter.
 
         # Set by TradingEnv.reset.
         self._done: Union[bool, None] = None
@@ -134,21 +180,18 @@ class TradingEnv(gym.Env):
         self._now: Union[datetime, None] = None
         self._events_nonlatent: Union[List[IEvent], None] = None
 
-        # Run procedure to fit transformers.
         if fit_transformers:
+            # Run procedure to fit transformers.
             # TODO: Test.
             kwargs = fit_transformers if isinstance(fit_transformers, dict) else dict()
             # needed to collect historical values of features
-            # self.episode_length = None
-            # self.backtest(**kwargs, episode_length=None)
             self.backtest(**kwargs)
             for feature in self.state.features:
                 feature.fit_transformer()
-            # self.episode_length = episode_length
             # if transformers have been fit, this verification will fail.
-            #   Solution is to verify in parse by each feature and not here if
-            #   transformers have been fit.
-            # By default features before not transformation are verified anyway
+            # Solution is to verify in parse by each feature and not here if
+            # transformers have been fit.
+            # By default, features before not transformation are verified anyway
             # even if verify state is False, so we should be still safe.
             self._verify_state = False
 
@@ -178,25 +221,11 @@ class TradingEnv(gym.Env):
             If specified, the episode will stop after this number of states.
             If not provided, the episode will last until when there are no
             more data (e.g. a complete pass trough the 'training-set' fold).
-        seed : int
-            This method should also reset the environment's random number
-            generator(s) if `seed` is an integer or if the environment has not
-            yet initialized a random number generator. If the environment already
-            has a random number generator and `reset` is called with `seed=None`,
-            the RNG should not be reset.
-            Moreover, `reset` should (in the typical use case) be called with an
-            integer seed right after initialization and then never again.
-        return_info
-            Not supported but here for OpenAI-gym compatibility.
-        options
-            Not supported but here for OpenAI-gym compatibility.
 
         Returns
         -------
         Initial state of the environment.
         """
-        # episode_length = episode_length or self.episode_length  # TODO: test
-
         # Reset attributes.
         self._done = False
         self._last_event = None
@@ -240,11 +269,12 @@ class TradingEnv(gym.Env):
         Parameters
         ----------
         action : Union[int, np.ndarray]
-            If the action observation_space is discrete, action is an integer representing
-            the action ID. If the action observation_space is continuous, action is a
-            np.array with the target weights of the portfolio to be rebalanced
-            as indicated in TradingEnv.action_space. The weight will be applied
-            to the notional trading value of the contract (transaction_price * multiplier).
+            If the action observation_space is discrete, action is an integer
+            representing the action ID. If the action observation_space is
+            continuous, action is a np.array with the target weights of the
+            portfolio to be rebalanced as indicated in TradingEnv.action_space.
+            The weight will be applied to the notional trading value of the
+            contract (transaction_price * multiplier).
 
         Returns
         -------
@@ -292,8 +322,9 @@ class TradingEnv(gym.Env):
                 "".format(mode, self.metadata["render.modes"])
             )
         if mode == 'dashboard':
+            raise NotImplementedError("Legacy method that used to render "
+                                      "results of the backtest or simulation.")
             # Note: there is no clean way for the user to stop this thread :(
-            # TODO: support dynamically adding/track_records
             track_records = track_records or [self.broker.track_record]
             dashboard = Dashboard(track_records)
             thread = threading.Thread(
@@ -319,6 +350,9 @@ class TradingEnv(gym.Env):
         progress_bar: bool = False,
     ) -> "TrackRecord":
         """
+        Run a backtest for a given policy. This method is useful for
+        backtesting uses cases and not for reinforcement learning.
+
         Parameters
         ----------
         fold : str

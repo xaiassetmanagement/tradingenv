@@ -206,6 +206,17 @@ class Index(AbstractContract):
         return self._symbol
 
 
+class Stock(ETF):
+    """A stock (e.g. Miscrosoft).
+
+    Examples
+    --------
+    >>> stock = Stock('MSFT')
+    >>> stock
+    Stock(MSFT)
+    """
+
+
 class Rate(AbstractContract):
     """An rate (e.g. FED Funds rate).
 
