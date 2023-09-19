@@ -138,53 +138,7 @@ class AbstractContract(ABC):
         return self.symbol
 
 
-class Cash(AbstractContract):
-    """A cash contract (e.g. USD).
-
-    Examples
-    --------
-    >>> cash = Cash('EUR')
-    >>> cash
-    Cash(EUR)
-    """
-
-    multiplier = 1.0
-    cash_requirement = 1.0
-    margin_requirement = 0.0
-
-    def __init__(self, currency: str = "USD"):
-        self.currency = currency
-
-    @property
-    def symbol(self) -> str:
-        return self.currency
-
-
-class ETF(AbstractContract):
-    """An ETF contract (e.g. SPY).
-
-    Examples
-    --------
-    >>> etf = ETF('SPY')
-    >>> etf
-    ETF(SPY)
-    """
-
-    multiplier = 1.0
-    cash_requirement = 1.0
-    margin_requirement = 0.0
-
-    def __init__(self, symbol: str, exchange: str = "SMART", currency: str = "USD"):
-        self._symbol = symbol
-        self.exchange = exchange
-        self.currency = currency
-
-    @property
-    def symbol(self) -> str:
-        return self._symbol
-
-
-class Index(AbstractContract):
+class Asset(AbstractContract):
     """An index (e.g. S&P 500).
 
     Examples
@@ -206,7 +160,43 @@ class Index(AbstractContract):
         return self._symbol
 
 
-class Stock(ETF):
+class Cash(Asset):
+    """A cash contract (e.g. USD).
+
+    Examples
+    --------
+    >>> cash = Cash('EUR')
+    >>> cash
+    Cash(EUR)
+    """
+
+    def __init__(self, symbol: str = "USD"):
+        super().__init__(symbol)
+
+
+class ETF(Asset):
+    """An ETF contract (e.g. SPY).
+
+    Examples
+    --------
+    >>> etf = ETF('SPY')
+    >>> etf
+    ETF(SPY)
+    """
+
+
+class Index(Asset):
+    """An ETF contract (e.g. SPY).
+
+    Examples
+    --------
+    >>> etf = Index('SPY')
+    >>> etf
+    Index(SPY)
+    """
+
+
+class Stock(Asset):
     """A stock (e.g. Miscrosoft).
 
     Examples
