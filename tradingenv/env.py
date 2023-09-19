@@ -29,7 +29,7 @@ from typing import Tuple, Sequence, Union, List, Any, Optional
 from pandas.core.generic import NDFrame
 from datetime import datetime
 from tqdm import tqdm
-from collections import deque
+from collections import deque, defaultdict
 import pandas as pd
 import numpy as np
 import threading
@@ -54,6 +54,7 @@ class TradingEnv(gym.Env):
         latency: float = 0,
         steps_delay: int = 0,
         fit_transformers: Union[bool, dict] = False,
+        episode_length: int = None,
         sampling_span: int = None
     ):
         """
@@ -129,6 +130,11 @@ class TradingEnv(gym.Env):
         fit_transformers : bool
             False by default. If True, observations defined by the `state`
             argument are using a class form sklearn.preprocessing.
+        episode_length
+            If not provided, the episode will terminate when the net liquidation
+            value of the assets goes to zero or when market data stops. You
+            can optionally provide a number of interaction with the environment
+            after which the episode will terminate.
         sampling_span: int
             This argument is used only if episode_length is passed in
             TrandingEnv.reset. If specified, the episode start date is sampled
@@ -139,6 +145,9 @@ class TradingEnv(gym.Env):
             specify a value if you wish to train reinforcement learning agents
             that overweight observations from the more recent past.
         """
+        if episode_length:
+            # Adding 1 because there are (episode_length - 1) actions otherwise.
+            episode_length += 1
         if not isinstance(action_space, PortfolioSpace):
             # action observation_space is assumed to be a sequence of contracts.
             action_space = BoxPortfolio(action_space)
@@ -161,6 +170,8 @@ class TradingEnv(gym.Env):
         self._steps_delay =  steps_delay
         self._queue_actions: Optional[deque] = None
         self._sampling_span = sampling_span
+        self._visits = defaultdict(int)
+        self._episode_length = episode_length
 
         # Add extra events to transmitter and create partitions of events.
         for contract in self.action_space.contracts:
@@ -179,7 +190,6 @@ class TradingEnv(gym.Env):
         self._observers: Union[Sequence[Observer], None] = None
         self._now: Union[datetime, None] = None
         self._events_nonlatent: Union[List[IEvent], None] = None
-        self._visits: Union[dict, None] = None
 
         if fit_transformers:
             # Run procedure to fit transformers.
@@ -227,8 +237,9 @@ class TradingEnv(gym.Env):
         -------
         Initial state of the environment.
         """
+        episode_length = episode_length or self._episode_length
+
         # Reset attributes.
-        self._visits = defaultdict(int)
         self._done = False
         self._last_event = None
         self._queue_actions = deque(
