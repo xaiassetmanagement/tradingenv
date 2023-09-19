@@ -6,7 +6,7 @@ from typing import Sequence
 import numpy as np
 from datetime import datetime
 from abc import ABC
-from typing import Dict
+from typing import Dict, Mapping
 import inspect
 
 
@@ -212,3 +212,21 @@ class EventNewDate(IEvent):
     def __init__(self, time: datetime, broker: "broker.Broker"):
         self.time = time
         self.broker = broker
+
+
+class EventNewObservation(IEvent):
+    """Stores a snapshot of exogenous variables at a given time."""
+
+    def __init__(self, time: datetime, data: Mapping):
+        self.time = time
+        self.data = dict(data)
+
+    def __getitem__(self, item):
+        return self.data[item]
+
+    def __len__(self):
+        return len(self.data)
+
+    def to_list(self) -> np.array:
+        x = list(self.data.values())
+        return x
