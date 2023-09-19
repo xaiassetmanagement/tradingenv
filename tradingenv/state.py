@@ -1,8 +1,9 @@
-from tradingenv.events import Observer
+from tradingenv.events import Observer, EventNewObservation
 from tradingenv.features import Feature
 from gym.spaces import Space
 from datetime import datetime
-from typing import Dict, Any, Sequence, Callable
+from typing import Dict, Any, Sequence, Callable, Union
+from collections import deque
 import tradingenv
 import numpy as np
 import functools
@@ -157,6 +158,79 @@ class IState(Observer):
         if self.features is not None:
             for feature in self.features:
                 feature.reset(exchange, action_space, broker)
+
+
+class State(IState):
+    """This State implementation allows to specify a window of past data. Useful
+    when the observation is not Markovian."""
+
+    def __init__(
+            self,
+            features: Union[int, Sequence[str]],
+            window: int = 1,
+            max_: float = 10.
+    ):
+        """
+        Parameters
+        ----------
+        features
+            Number of features or list of feature names. If int, feature names
+            will be 0, 1, ..., n-1.
+        window
+            Window size of the observations. In other words, the observation
+            returned by the environment in a given timestep is given by the
+            concatenation of as many past observations. Using a window larger
+            than 1 can be useful when past observation may have informational
+            value that is observations are not Markovian.
+        max_
+            Maximum value of each feature. This is used to scale the state.
+            The state is scaled to [-max_, +max_]. The default value is 100,
+            arguably a large value. This is because we defer sanity checks to
+            input features to data preprocessing.
+        """
+        try:
+            list(features)
+        except TypeError:
+            n = features
+            self.names = list(range(n))
+        else:
+            n = len(features)
+            self.names = list(features)
+        self.space = gym.spaces.Box(-max_, max_, (window, n), float)
+        self.queue = deque(maxlen=window)
+        self.last_event = None
+        super().__init__()
+
+    def process_EventNewObservation(self, event: EventNewObservation):
+        if self.last_event is None:
+            for _ in range(self.queue.maxlen):
+                self.queue.append([event.to_list()])
+        self.queue.append([event.to_list()])
+        self.last_event = event
+
+    def parse(self) -> np.array:
+        """Returns a numpy array of shape (window, n_features)."""
+        return np.concatenate(self.queue)
+
+    def flatten(self) -> dict:
+        """Flatten the history of past states. Can be useful to parse complex
+        states in tabular form for further analysis or visualisations."""
+        s_ = dict()
+        for k, v in self.history.items():
+            try:
+                if v.ndim == 1:
+                    # To make this work with 1d array
+                    s_[k] = v.item()
+                elif v.ndim == 2:
+                    # To make this work with 2d array
+                    s_[k] = v.squeeze()
+            except ValueError:
+                # Was not a np.array, either 1d or 2d.
+                # ValueError: can only convert an array of size 1 to a Python scalar
+                for i, j in enumerate(v[0]):
+                    s_[f'{k}{i}'] = j
+                pass
+        return s_
 
 
 def cache(callback=None, check_every: int = np.inf, check_on_start: bool = True):
