@@ -44,8 +44,8 @@ class TradingEnv(gym.Env):
 
     def __init__(
         self,
-        action_space: Union[list[AbstractContract], PortfolioSpace],
-        state: Union[IState, list[Feature]] = IState(),
+        action_space: Union[List[AbstractContract], PortfolioSpace],
+        state: Union[IState, List[Feature]] = IState(),
         reward: Union[str, AbstractReward] = RewardSimpleReturn(),
         transmitter: AbstractTransmitter = AsynchronousTransmitter(),
         prices: pd.DataFrame = None,
@@ -59,7 +59,7 @@ class TradingEnv(gym.Env):
         """
         Parameters
         ----------
-        action_space: Union[list[AbstractContract], PortfolioSpace]
+        action_space: Union[List[AbstractContract], PortfolioSpace]
             This determines the investment universe of assets that can be
             traded during the simulations, as well any extra logic necessary to
             map an action to a portfolio of assets. To define a continuous
