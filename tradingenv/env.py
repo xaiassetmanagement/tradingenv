@@ -179,6 +179,7 @@ class TradingEnv(gym.Env):
         self._observers: Union[Sequence[Observer], None] = None
         self._now: Union[datetime, None] = None
         self._events_nonlatent: Union[List[IEvent], None] = None
+        self._visits: Union[dict, None] = None
 
         if fit_transformers:
             # Run procedure to fit transformers.
@@ -227,6 +228,7 @@ class TradingEnv(gym.Env):
         Initial state of the environment.
         """
         # Reset attributes.
+        self._visits = defaultdict(int)
         self._done = False
         self._last_event = None
         self._queue_actions = deque(
@@ -300,6 +302,7 @@ class TradingEnv(gym.Env):
         reward = self._reward.calculate(self)
 
         # Tear down events to notify observers.
+        self._visits[self.now()] += 1
         self.notify(EventStep(self.now(), self.broker.track_record, action))
         if self._done:
             # _process again to update the state with last data points.
@@ -475,3 +478,8 @@ class TradingEnv(gym.Env):
             self._events_latent, self._events_nonlatent = self._transmitter._next()
         except StopIteration:
             self._done = True
+
+    def visits(self) -> pd.Series:
+        """Returns series indicating how many steps have been taken each
+        day in the environment. """
+        return pd.Series(self._visits).sort_index()
