@@ -53,6 +53,38 @@ class RewardLogReturn(AbstractReward):
         return float(np.log(nlv_now / nlv_last_rebalancing))
 
 
+class LogReturn(AbstractReward):
+    def __init__(self, scale: float = 1., clip: float = 2.):
+        """
+        Parameters
+        ----------
+        scale
+            Reward is divided by this number before being returned. This is a
+            helper to rescale the reward closer to a [-1, +1] range.
+        clip
+            Rewards larger than this clip value are truncated.
+
+        Notes
+        -----
+        For a good reference on why reward shaping is important see [1].
+
+        References
+        ----------
+        [1] van Hasselt, Hado P., et al. "Learning values across many orders of
+        magnitude." Advances in neural information processing systems 29 (2016).
+        """
+        self.scale = scale
+        self.clip = clip
+
+    def calculate(self, env: "tradingenv.env.TradingEnv") -> float:
+        nlv_last_rebalancing = env.broker.track_record[-1].context_pre.nlv
+        nlv_now = env.broker.net_liquidation_value()
+        ret = np.log(nlv_now / nlv_last_rebalancing)
+        ret /= self.scale
+        ret = np.clip(ret, -self.clip, +self.clip)
+        return float(ret)
+
+
 class RewardSimpleReturn(AbstractReward):
     """Simple change of the net liquidation value of the account at each
     step."""
