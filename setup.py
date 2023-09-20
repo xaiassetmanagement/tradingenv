@@ -45,6 +45,7 @@ setuptools.setup(
         "gym==0.21",
         "numpy",
         "pandas",
+        "pandas_market_calendars",
         "plotly",
         "scikit-learn",
         "statsmodels",

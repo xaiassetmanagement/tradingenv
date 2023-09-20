@@ -5,10 +5,10 @@ from tradingenv.broker.broker import Broker, EndOfEpisodeError
 from tradingenv.broker.track_record import TrackRecord
 from tradingenv.broker.fees import IBrokerFees, BrokerFees
 from tradingenv.exchange import Exchange
-from tradingenv.contracts import AbstractContract, Cash
-from tradingenv.rewards import make_reward, AbstractReward, RewardSimpleReturn
+from tradingenv.contracts import AbstractContract, Cash, Asset, Rate
+from tradingenv.rewards import make_reward, AbstractReward, RewardSimpleReturn, LogReturn
 from tradingenv.policy import make_policy
-from tradingenv.state import IState
+from tradingenv.state import IState, State
 from tradingenv.features import Feature
 from tradingenv.events import (
     Observer,
@@ -18,6 +18,7 @@ from tradingenv.events import (
     EventDone,
     EventNBBO,
     EventNewDate,
+    EventNewObservation,
 )
 from tradingenv.transmitter import (
     AbstractTransmitter,
@@ -25,11 +26,16 @@ from tradingenv.transmitter import (
     Transmitter,
     TRAINING_SET,
 )
+from sklearn.preprocessing import PowerTransformer
+from sklearn.base import TransformerMixin
+from sklearn.utils.validation import check_is_fitted
+from sklearn.exceptions import NotFittedError
 from typing import Tuple, Sequence, Union, List, Any, Optional
 from pandas.core.generic import NDFrame
-from datetime import datetime
+from datetime import datetime, timedelta
 from tqdm import tqdm
 from collections import deque, defaultdict
+import pandas_market_calendars
 import pandas as pd
 import numpy as np
 import threading
@@ -494,3 +500,131 @@ class TradingEnv(gym.Env):
         """Returns series indicating how many steps have been taken each
         day in the environment. """
         return pd.Series(self._visits).sort_index()
+
+
+class TradingEnvDaily(TradingEnv):
+    """Higher-level extension of TradingEnv specific for training reinforcement
+    learning agents or backtesting on daily data."""
+
+    def __init__(self,
+                 features: pd.DataFrame,
+                 assets: pd.DataFrame,
+                 start: datetime = None,
+                 end: datetime = None,
+                 transformer_end: str = None,
+                 transformer: str = 'yeo-johnson',
+                 reward: str = 'logret',
+                 spread: float = 0.0002,
+                 margin: float = 0.02,
+                 markup: float = 0.005,
+                 rate: str = None,
+                 fee: float = 0.0002,
+                 steps_delay: int = 1,
+                 window: int = 1,
+                 max_long: float = 1.,
+                 max_short: float = -1.,
+                 calendar: str = 'NYSE',
+                 folds: dict = None,
+                 episode_length: int = None,
+                 sampling_span: int = None
+                 ):
+        # TODO: Add docstring
+        if isinstance(start, str):
+            start = pd.to_datetime(start)
+        start = start or assets.first_valid_index()
+        start = max(start, assets.first_valid_index())
+        if isinstance(end, str):
+            end = pd.to_datetime(end)
+        end = end or assets.last_valid_index()
+        end = min(end, assets.last_valid_index())
+        transformer_end = transformer_end or end
+
+        risk_free = rate.squeeze().loc[start:end]
+        risk_free.name = Rate(risk_free.name)
+        if not risk_free.between(-1, +1).all():
+            raise ValueError(
+                "Argument `rate` is expressed as a percentage and it "
+                "shouldn't. For example, 1% should be expressed as 0.01."
+            )
+
+        # Transform data.
+        # TODO: move this logic to custom default transformer
+        # TODO: Unit test no look-ahead bias in transformer.
+        # TODO: If folds are provided, fit only on the training fold.
+        if isinstance(transformer, TransformerMixin):
+            self.transformer = transformer
+        elif transformer == 'yeo-johnson':
+            self.transformer = PowerTransformer(transformer)
+        else:
+            raise ValueError(f"Unsupported transformer: {transformer}")
+        self.transformer.set_output(transform="pandas")
+        try:
+            check_is_fitted(self.transformer)
+        except NotFittedError:
+            # Fit transformer using data before start but not after end
+            # to provide more data to transformer and reduce 0-padding
+            # when forward-filling low frequency data.
+            self.transformer.fit(features.loc[:transformer_end])
+
+        if reward == 'logret':
+            scale = np.log(pd.DataFrame(assets).loc[start:transformer_end]).diff().std().item()
+            reward = LogReturn(scale=float(scale), clip=2.)
+        else:
+            raise NotImplementedError(f'Unsupported reward: {reward}')
+
+        # TODO: make explicit that transmitter is fit on data before start.
+        features = self.transformer.transform(features.loc[:end])
+        features.ffill(inplace=True)
+        features.fillna(0., inplace=True)
+        features.clip(-10, +10, inplace=True)
+        if window == 1:
+            features_transmitter = features
+        else:
+            t0 = features.loc[start:end].first_valid_index()
+            t0_index = features.index.get_loc(t0)
+            features_transmitter = features.iloc[t0_index - 2 * (window + 1):]
+        features = features.loc[start:end]
+        assets = pd.DataFrame(assets).loc[start:end]
+        assets.columns = [Asset(col) for col in assets.columns]
+        assert features.first_valid_index() <= assets.first_valid_index()
+        super().__init__(
+            action_space=BoxPortfolio(assets.columns, max_short, max_long, margin=margin),
+            state=State(features.columns.size, window),
+            reward=reward,
+            transmitter=self._make_transmitter(features_transmitter, assets, calendar, spread, risk_free, folds, window),
+            broker_fees=BrokerFees(markup, risk_free.name, fee),
+            steps_delay=steps_delay,
+            episode_length=episode_length,
+            sampling_span=sampling_span,
+        )
+
+        # Set attributes.
+        self.features = features
+        self.assets = assets
+        self.start = min(self._transmitter.timesteps)
+        self.end = max(self._transmitter.timesteps)
+
+    @staticmethod
+    def _make_timesteps(features: pd.DataFrame, assets: pd.DataFrame, calendar: str):
+        calendar = pandas_market_calendars.get_calendar(calendar)
+        holidays = calendar.holidays().holidays
+        start = max(features.first_valid_index(), assets.first_valid_index())
+        end = min(features.last_valid_index(), assets.last_valid_index())
+        assets = assets.loc[start:end]
+        timesteps = assets.drop([t for t in holidays if t in assets.index]).index
+        return timesteps
+
+    def _make_transmitter(self, features: pd.DataFrame, assets: pd.DataFrame, calendar: str, spread: float = 0., rate = None, folds = None, window = None):
+        # TODO: test market calendar is applied.
+        # TODO: test no past events are not processed - no need to spend computation in warming up if not needee.
+        # Drop dates where market is closed from the tradable asset.
+        markov_reset = window == 1
+        warmup = None if markov_reset else timedelta(days=3 + window * 2)
+        timesteps = self._make_timesteps(features, assets, calendar)
+        transmitter = Transmitter(timesteps, folds, markov_reset, warmup)
+        for name in assets.columns:
+            transmitter.add_prices(assets[[name]], spread)
+        events = [EventNewObservation(t, x) for t, x in features.iterrows()]
+        transmitter.add_events(events)
+        transmitter.add_prices(rate.to_frame())
+        return transmitter
