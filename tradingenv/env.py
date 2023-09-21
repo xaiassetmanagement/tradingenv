@@ -26,7 +26,7 @@ from tradingenv.transmitter import (
     Transmitter,
     TRAINING_SET,
 )
-from sklearn.preprocessing import PowerTransformer
+from sklearn.preprocessing import PowerTransformer, StandardScaler
 from sklearn.base import TransformerMixin
 from sklearn.utils.validation import check_is_fitted
 from sklearn.exceptions import NotFittedError
@@ -503,21 +503,20 @@ class TradingEnv(gym.Env):
 
 
 class TradingEnvDaily(TradingEnv):
-    """Higher-level extension of TradingEnv specific for training reinforcement
-    learning agents or backtesting on daily data."""
+    """Higher-level extension of TradingEnv specifically daily data."""
 
     def __init__(self,
                  features: pd.DataFrame,
                  assets: pd.DataFrame,
                  start: datetime = None,
                  end: datetime = None,
-                 transformer_end: str = None,
                  transformer: str = 'yeo-johnson',
+                 transformer_end: str = None,
                  reward: str = 'logret',
                  spread: float = 0.0002,
                  margin: float = 0.02,
                  markup: float = 0.005,
-                 rate: str = None,
+                 rate: pd.Series = None,
                  fee: float = 0.0002,
                  steps_delay: int = 1,
                  window: int = 1,
@@ -528,7 +527,91 @@ class TradingEnvDaily(TradingEnv):
                  episode_length: int = None,
                  sampling_span: int = None
                  ):
-        # TODO: Add docstring
+        """
+        Parameters
+        ----------
+        features
+            A pandas.DataFrame where index is time and columns are names of the
+            exogenous variables. Values allow missing values. The observation
+            space of the environment will have as many variables as the number
+            of columns.
+        assets
+            A pandas.Dataframe where index is time and columns are names of
+            the assets being traded. Prices allow missing values.
+        start
+            The backtest of episodes cannot start earlier than this date.
+        end
+            The backtest of episodes cannot end after this date.
+        transformer
+            A sklearn.preprocessing transformer used to map the input data in
+            a suitable range of deviation. As a shortcut, you can pass 'z-score'
+            to standardise the data or 'yeo-johnson' for a power transform that
+            will reduce the magnitude of outliers. Default is 'yeo-johnson'.
+        transformer_end
+            If a transformer is passed and is not fit, then the transformer
+            will be fit over the period start:transformer_end. If a value is
+            not passed, then the transformer is fitted between start:end.
+        reward
+            The reward function. At present, the only supported reawrd function
+            is 'logreturn'.
+        spread
+            Bid-ask spread of the assets being traded. It's 0.0002 by default,
+            that is 0.02%.
+        margin
+            This is 0.02 by default, that is 2%. If the notional value of a
+            trade over the net liquidation value of the trading account is
+            smaller than the margin, then the trade will not be implemented.
+            This can be useful to reduce transaction costs by filtering out
+            small trades.
+        rate
+            A pandas series with the risk free rate used to calculate yield on
+            idle cash or cost of leverage.
+        markup
+            Broker markup. If a risk free rate is provided, idle cash in the
+            trading account will yield risk_free - markup. Viceversa, if the
+            account is leveraged by borrowing from the broker, the cost of
+            leverage will by risk_free + markup. This is 0.005 (0.5%) by
+            default.
+        fee
+            The broker will charge a fee proportional to the notional traded
+            value. This is 0.0002 (0.02%) by default.
+        steps_delay : int
+            Number of days that it takes to implement trades. This is 1 by
+            default. Note: if zero, then trades are placed in the same instant
+            that information act upon becomes available.
+        window
+            The shape of the observation space will be (window, nr_features).
+            Window is 1 by default. The observation will return the last
+            `window` observation for each feature. Useful when past observation
+            carry useful information.
+        max_long
+            1 (100%) by default. Long a
+            llocation in a given asset larger than
+            max_long will raise an error.
+        max_short
+            -1 (-100%) by default. Short allocation in a given asset smaller
+            than max_short will raise an error.
+        calendar
+            Trading calendar code. Prevents the backtest or interaction with
+            the environment to occur when markets are closed. 'NYSE' by default.
+        folds
+            Used to partition the data in multiple folds.
+        episode_length
+            If not provided, the episode will terminate when the net liquidation
+            value of the assets goes to zero or when market data stops. You
+            can optionally provide a number of interaction with the environment
+            after which the episode will terminate.
+        sampling_span: int
+            This argument is used only if episode_length is passed in
+            TrandingEnv.reset. If specified, the episode start date is sampled
+            using an exponentially decaying probability. sampling_span is the
+            number of recent timesteps that captures ~70% of the likelihood of
+            sampling a start date from such window. Uniform distribution is
+            used by default if this parameter is not provided. It's useful to
+            specify a value if you wish to train reinforcement learning agents
+            that overweight observations from the more recent past.
+        """
+
         if isinstance(start, str):
             start = pd.to_datetime(start)
         start = start or assets.first_valid_index()
@@ -553,6 +636,8 @@ class TradingEnvDaily(TradingEnv):
         # TODO: If folds are provided, fit only on the training fold.
         if isinstance(transformer, TransformerMixin):
             self.transformer = transformer
+        elif transformer == 'z-score':
+            self.transformer = StandardScaler(transformer)
         elif transformer == 'yeo-johnson':
             self.transformer = PowerTransformer(transformer)
         else:
