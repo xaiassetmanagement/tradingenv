@@ -502,12 +502,13 @@ class TradingEnv(gym.Env):
         return pd.Series(self._visits).sort_index()
 
 
-class TradingEnvDaily(TradingEnv):
-    """Higher-level extension of TradingEnv specifically daily data."""
+class TradingEnvXY(TradingEnv):
+    """High-level wrapper of TradingEnv that allows to pass features (X) and
+    prices for assets to be traded (Y) as pandas.DataFrame."""
 
     def __init__(self,
-                 features: pd.DataFrame,
-                 assets: pd.DataFrame,
+                 X: pd.DataFrame,
+                 Y: pd.DataFrame,
                  start: datetime = None,
                  end: datetime = None,
                  transformer: str = 'yeo-johnson',
@@ -531,14 +532,15 @@ class TradingEnvDaily(TradingEnv):
         """
         Parameters
         ----------
-        features
+        X
             A pandas.DataFrame where index is time and columns are names of the
-            exogenous variables. Values allow missing values. The observation
+            exogenous variables. Missing values are allowed. The observation
             space of the environment will have as many variables as the number
             of columns.
-        assets
+        Y
             A pandas.Dataframe where index is time and columns are names of
-            the assets being traded. Prices allow missing values.
+            the assets being traded. Value are prices. Missing values are
+            allowed.
         start
             The backtest of episodes cannot start earlier than this date.
         end
@@ -620,12 +622,12 @@ class TradingEnvDaily(TradingEnv):
 
         if isinstance(start, str):
             start = pd.to_datetime(start)
-        start = start or assets.first_valid_index()
-        start = max(start, assets.first_valid_index())
+        start = start or Y.first_valid_index()
+        start = max(start, Y.first_valid_index())
         if isinstance(end, str):
             end = pd.to_datetime(end)
-        end = end or assets.last_valid_index()
-        end = min(end, assets.last_valid_index())
+        end = end or Y.last_valid_index()
+        end = min(end, Y.last_valid_index())
         transformer_end = transformer_end or end
 
         risk_free = rate.squeeze().loc[start:end]
@@ -637,7 +639,6 @@ class TradingEnvDaily(TradingEnv):
             )
 
         # Transform data.
-        # TODO: move this logic to custom default transformer
         # TODO: Unit test no look-ahead bias in transformer.
         # TODO: If folds are provided, fit only on the training fold.
         if isinstance(transformer, TransformerMixin):
@@ -655,36 +656,36 @@ class TradingEnvDaily(TradingEnv):
             # Fit transformer using data before start but not after end
             # to provide more data to transformer and reduce 0-padding
             # when forward-filling low frequency data.
-            self.transformer.fit(features.loc[:transformer_end])
+            self.transformer.fit(X.loc[:transformer_end])
 
         if reward == 'logret':
-            scale = np.log(pd.DataFrame(assets).loc[start:transformer_end]).diff().std().item()
+            scale = np.log(pd.DataFrame(Y).loc[start:transformer_end]).diff().std().item()
             reward = LogReturn(scale=float(scale), clip=2.)
         else:
             raise NotImplementedError(f'Unsupported reward: {reward}')
 
-        features = self.transformer.transform(features.loc[:end])
-        features.ffill(inplace=True)
-        features.fillna(0., inplace=True)
-        features.clip(-clip, clip, inplace=True)
+        X = self.transformer.transform(X.loc[:end])
+        X.ffill(inplace=True)
+        X.fillna(0., inplace=True)
+        X.clip(-clip, clip, inplace=True)
 
         # We drop features before the start date to speed-up warming-up
         # computations. Note if window is 1, then t0_warmup_idx is 0.
-        t0 = features.loc[start:end].first_valid_index()
-        t0_idx = features.index.get_loc(t0)
+        t0 = X.loc[start:end].first_valid_index()
+        t0_idx = X.index.get_loc(t0)
         t0_warmup_idx = t0_idx - window + 1
         assert t0_warmup_idx >= 0
-        features = features.iloc[t0_warmup_idx:]
+        X = X.iloc[t0_warmup_idx:]
 
         # Discard data outside the data range and set contracts.
-        assets = pd.DataFrame(assets).loc[start:end]
-        assets.columns = [Asset(col) for col in assets.columns]
-        assert features.first_valid_index() <= assets.first_valid_index()
+        Y = pd.DataFrame(Y).loc[start:end]
+        Y.columns = [Asset(col) for col in Y.columns]
+        assert X.first_valid_index() <= Y.first_valid_index()
         super().__init__(
-            action_space=BoxPortfolio(assets.columns, max_short, max_long, margin=margin),
-            state=State(features.columns.size, window),
+            action_space=BoxPortfolio(Y.columns, max_short, max_long, margin=margin),
+            state=State(X.columns.size, window),
             reward=reward,
-            transmitter=self._make_transmitter(features, assets, calendar, spread, risk_free, folds, window),
+            transmitter=self._make_transmitter(X, Y, calendar, spread, risk_free, folds, window),
             broker_fees=BrokerFees(markup, risk_free.name, fee),
             steps_delay=steps_delay,
             episode_length=episode_length,
@@ -692,32 +693,32 @@ class TradingEnvDaily(TradingEnv):
         )
 
         # Set attributes.
-        self.features = features
-        self.assets = assets
+        self.X = X
+        self.Y = Y
         self.start = min(self._transmitter.timesteps)
         self.end = max(self._transmitter.timesteps)
 
     @staticmethod
-    def _make_timesteps(features: pd.DataFrame, assets: pd.DataFrame, calendar: str):
+    def _make_timesteps(X: pd.DataFrame, Y: pd.DataFrame, calendar: str):
         calendar = pandas_market_calendars.get_calendar(calendar)
         holidays = calendar.holidays().holidays
-        start = max(features.first_valid_index(), assets.first_valid_index())
-        end = min(features.last_valid_index(), assets.last_valid_index())
-        assets = assets.loc[start:end]
-        timesteps = assets.drop([t for t in holidays if t in assets.index]).index
+        start = max(X.first_valid_index(), Y.first_valid_index())
+        end = min(X.last_valid_index(), Y.last_valid_index())
+        Y = Y.loc[start:end]
+        timesteps = Y.drop([t for t in holidays if t in Y.index]).index
         return timesteps
 
-    def _make_transmitter(self, features: pd.DataFrame, assets: pd.DataFrame, calendar: str, spread: float = 0., rate = None, folds = None, window = None):
+    def _make_transmitter(self, X: pd.DataFrame, Y: pd.DataFrame, calendar: str, spread: float = 0., rate = None, folds = None, window = None):
         # TODO: test market calendar is applied.
         # TODO: test no past events are not processed - no need to spend computation in warming up if not needee.
         # Drop dates where market is closed from the tradable asset.
         markov_reset = window == 1
         warmup = None if markov_reset else timedelta(days=3 + window * 2)
-        timesteps = self._make_timesteps(features, assets, calendar)
+        timesteps = self._make_timesteps(X, Y, calendar)
         transmitter = Transmitter(timesteps, folds, markov_reset, warmup)
-        for name in assets.columns:
-            transmitter.add_prices(assets[[name]], spread)
-        events = [EventNewObservation(t, x) for t, x in features.iterrows()]
+        for name in Y.columns:
+            transmitter.add_prices(Y[[name]], spread)
+        events = [EventNewObservation(t, x) for t, x in X.iterrows()]
         transmitter.add_events(events)
         transmitter.add_prices(rate.to_frame())
         return transmitter
