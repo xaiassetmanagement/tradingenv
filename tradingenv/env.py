@@ -530,6 +530,10 @@ class TradingEnvXY(TradingEnv):
                  sampling_span: int = None
                  ):
         """
+        Note: we are loosely borrowing the notation of supervised learning
+        where X is the input and Y is the output. While it remains true for X,
+        in this application Y is a time series of prices to be traded.
+
         Parameters
         ----------
         X
@@ -618,8 +622,16 @@ class TradingEnvXY(TradingEnv):
             used by default if this parameter is not provided. It's useful to
             specify a value if you wish to train reinforcement learning agents
             that overweight observations from the more recent past.
-        """
 
+        Attributes
+        ----------
+        X : pandas.DataFrame
+            Data derived from the input X after having been transformed.
+            The environment will use this data to calculate serve observations.
+        Y : pandas.DataFrame
+            Data derived from the input Y. The environment allows trading
+            these asset prices after applying the bid-ask spread.
+        """
         if isinstance(start, str):
             start = pd.to_datetime(start)
         start = start or Y.first_valid_index()
@@ -700,6 +712,7 @@ class TradingEnvXY(TradingEnv):
 
     @staticmethod
     def _make_timesteps(X: pd.DataFrame, Y: pd.DataFrame, calendar: str):
+        # Drop dates where market is closed.
         calendar = pandas_market_calendars.get_calendar(calendar)
         holidays = calendar.holidays().holidays
         start = max(X.first_valid_index(), Y.first_valid_index())
@@ -711,7 +724,6 @@ class TradingEnvXY(TradingEnv):
     def _make_transmitter(self, X: pd.DataFrame, Y: pd.DataFrame, calendar: str, spread: float = 0., rate = None, folds = None, window = None):
         # TODO: test market calendar is applied.
         # TODO: test no past events are not processed - no need to spend computation in warming up if not needee.
-        # Drop dates where market is closed from the tradable asset.
         markov_reset = window == 1
         warmup = None if markov_reset else timedelta(days=3 + window * 2)
         timesteps = self._make_timesteps(X, Y, calendar)
