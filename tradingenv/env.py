@@ -520,6 +520,7 @@ class TradingEnvDaily(TradingEnv):
                  fee: float = 0.0002,
                  steps_delay: int = 1,
                  window: int = 1,
+                 clip: float = 5.,
                  max_long: float = 1.,
                  max_short: float = -1.,
                  calendar: str = 'NYSE',
@@ -549,8 +550,13 @@ class TradingEnvDaily(TradingEnv):
             will reduce the magnitude of outliers. Default is 'yeo-johnson'.
         transformer_end
             If a transformer is passed and is not fit, then the transformer
-            will be fit over the period start:transformer_end. If a value is
-            not passed, then the transformer is fitted between start:end.
+            will be fit over all available features data unitl transformer_end.
+            If a value is not passed, then the transformer is fitted between
+            over all available data until `end`.
+        clip
+            After having transformed the variables, values larger than this
+            clip value will be truncated in a [-clip, +clip] range. The default
+            clip value is 5.
         reward
             The reward function. At present, the only supported reawrd function
             is 'logreturn'.
@@ -657,18 +663,20 @@ class TradingEnvDaily(TradingEnv):
         else:
             raise NotImplementedError(f'Unsupported reward: {reward}')
 
-        # TODO: make explicit that transmitter is fit on data before start.
         features = self.transformer.transform(features.loc[:end])
         features.ffill(inplace=True)
         features.fillna(0., inplace=True)
-        features.clip(-10, +10, inplace=True)
-        if window == 1:
-            features_transmitter = features
-        else:
-            t0 = features.loc[start:end].first_valid_index()
-            t0_index = features.index.get_loc(t0)
-            features_transmitter = features.iloc[t0_index - 2 * (window + 1):]
-        features = features.loc[start:end]
+        features.clip(-clip, clip, inplace=True)
+
+        # We drop features before the start date to speed-up warming-up
+        # computations. Note if window is 1, then t0_warmup_idx is 0.
+        t0 = features.loc[start:end].first_valid_index()
+        t0_idx = features.index.get_loc(t0)
+        t0_warmup_idx = t0_idx - window + 1
+        assert t0_warmup_idx >= 0
+        features = features.iloc[t0_warmup_idx:]
+
+        # Discard data outside the data range and set contracts.
         assets = pd.DataFrame(assets).loc[start:end]
         assets.columns = [Asset(col) for col in assets.columns]
         assert features.first_valid_index() <= assets.first_valid_index()
@@ -676,7 +684,7 @@ class TradingEnvDaily(TradingEnv):
             action_space=BoxPortfolio(assets.columns, max_short, max_long, margin=margin),
             state=State(features.columns.size, window),
             reward=reward,
-            transmitter=self._make_transmitter(features_transmitter, assets, calendar, spread, risk_free, folds, window),
+            transmitter=self._make_transmitter(features, assets, calendar, spread, risk_free, folds, window),
             broker_fees=BrokerFees(markup, risk_free.name, fee),
             steps_delay=steps_delay,
             episode_length=episode_length,
