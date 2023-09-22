@@ -48,6 +48,7 @@ The package is built upon the industry-standard gym_ and therefore can be used
 in conjunction with popular reinforcement learning frameworks including rllib_
 and stable-baselines3_.
 
+
 .. code-block:: python
 
     >>> from tradingenv import TradingEnv
@@ -62,6 +63,8 @@ and stable-baselines3_.
     # Load prices from Yahoo Finance and specify contract types.
     >>> prices = yfinance.Tickers(['SPY', 'TLT', 'TBIL']).history(period="12mo", progress=False)['Close'].tz_localize(None)
     >>> prices.columns = [ETF('SPY'), ETF('TLT'), ETF('TBIL')]
+    >>> print(prices)
+    >>> raise ValueError(prices)
 
     # Instance the trading environment.
     >>> env = TradingEnv(
