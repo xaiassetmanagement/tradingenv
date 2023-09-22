@@ -61,10 +61,9 @@ and stable-baselines3_.
     >>> import yfinance
 
     # Load prices from Yahoo Finance and specify contract types.
-    >>> prices = yfinance.Tickers(['SPY', 'TLT', 'TBIL']).history(period="12mo", progress=False)['Close'].tz_localize(None)
-    >>> prices.columns = [ETF('SPY'), ETF('TLT'), ETF('TBIL')]
+    >>> prices = yfinance.Tickers(['SPY', 'TLT', 'TBIL']).history(period="12mo", progress=False)#['Close'].tz_localize(None)
+    >>> #prices.columns = [ETF('SPY'), ETF('TLT'), ETF('TBIL')]
     >>> print(prices)
-    >>> raise ValueError(prices)
 
     # Instance the trading environment.
     >>> env = TradingEnv(
