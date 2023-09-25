@@ -60,10 +60,9 @@ and stable-baselines3_.
     >>> from tradingenv.policy import AbstractPolicy
     >>> import yfinance
 
-    # Load prices from Yahoo Finance and specify contract types.
-    >>> prices = yfinance.Tickers(['SPY', 'TLT', 'TBIL']).history(period="12mo", progress=False)#['Close'].tz_localize(None)
-    >>> #prices.columns = [ETF('SPY'), ETF('TLT'), ETF('TBIL')]
-    >>> print(prices)
+    # Load close prices from Yahoo Finance and specify contract types.
+    >>> prices = yfinance.Tickers(['SPY', 'TLT', 'TBIL']).history(period="12mo", progress=False)['Close'].tz_localize(None)
+    >>> prices.columns = [ETF('SPY'), ETF('TLT'), ETF('TBIL')]
 
     # Instance the trading environment.
     >>> env = TradingEnv(
