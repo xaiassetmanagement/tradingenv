@@ -83,8 +83,11 @@ supported include stocks, ETF and futures.
       :dedent: 8
       :lines: 3-
 
+
 .. figure:: https://tradingenv.blob.core.windows.net/images/tearsheet.png
+
 |
+
 .. figure:: https://tradingenv.blob.core.windows.net/images/fig_net_liquidation_value.png
 
 
