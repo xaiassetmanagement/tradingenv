@@ -48,13 +48,23 @@ The package is built upon the industry-standard gym_ and therefore can be used
 in conjunction with popular reinforcement learning frameworks including rllib_
 and stable-baselines3_.
 
+.. only:: html
 
-.. literalinclude:: ../../tests/examples/test_readme.py
-   :language: python
-   :pyobject: TestReadme.test_instancing_env
-   :tab-width: 0
-   :dedent: 8
-   :lines: 2-
+   .. literalinclude:: ../../tests/examples/test_readme.py
+      :language: python
+      :pyobject: TestReadme.test_instancing_env
+      :tab-width: 0
+      :dedent: 8
+      :lines: 2-
+
+.. only:: not html
+
+   .. code-block:: python
+
+      # Your Python code here
+      import tradingenv
+      print('Hello')
+
 
 
 Example - Backtesting
@@ -65,16 +75,17 @@ run simulations either using irregularly sampled trade and quotes data, daily
 closing prices, monthly economic data or alternative data. Financial instruments
 supported include stocks, ETF and futures.
 
-.. literalinclude:: ../../tests/examples/test_readme.py
-   :language: python
-   :pyobject: TestReadme.test_backtest_60_40
-   :dedent: 8
-   :lines: 3-
+.. only:: html
+
+   .. literalinclude:: ../../tests/examples/test_readme.py
+      :language: python
+      :pyobject: TestReadme.test_backtest_60_40
+      :dedent: 8
+      :lines: 3-
 
 .. figure:: https://tradingenv.blob.core.windows.net/images/tearsheet.png
 |
 .. figure:: https://tradingenv.blob.core.windows.net/images/fig_net_liquidation_value.png
-
 
 
 Relevant projects
