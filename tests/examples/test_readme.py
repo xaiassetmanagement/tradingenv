@@ -57,4 +57,4 @@ class TestReadme:
 
         # The track_record object stores the results of your backtest.
         track_record.tearsheet()
-
+        track_record.fig_net_liquidation_value()

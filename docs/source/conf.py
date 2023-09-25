@@ -123,7 +123,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = __package__
-copyright = '2019, Federico Fontana'
+copyright = '2023, Federico Fontana'
 author = 'Federico Fontana'
 
 # The version info for the project you're documenting, acts as replacement for

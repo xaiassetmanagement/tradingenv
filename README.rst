@@ -1,5 +1,5 @@
-.. figure:: docs/source/images/logo-background-cropped.png
-    :align: center
+.. figure:: https://tradingenv.blob.core.windows.net/images/logo-background-cropped.png
+   :align: center
 
 
 
@@ -32,14 +32,14 @@ will install the latest software version.
 
 .. code-block:: console
 
-    pip install tradingenv
+   pip install tradingenv
 
 Notebooks, software tests and building the documentation require extra
 dependencies that can be installed with
 
 .. code-block:: console
 
-    pip install tradingenv[extra]
+   pip install tradingenv[extra]
 
 
 Example - Reinforcement Learning
@@ -50,11 +50,11 @@ and stable-baselines3_.
 
 
 .. literalinclude:: ../../tests/examples/test_readme.py
-    :language: python
-    :pyobject: TestReadme.test_instancing_env
-    :tab-width: 0
-    :dedent: 8
-    :lines: 2-
+   :language: python
+   :pyobject: TestReadme.test_instancing_env
+   :tab-width: 0
+   :dedent: 8
+   :lines: 2-
 
 
 Example - Backtesting
@@ -66,21 +66,14 @@ closing prices, monthly economic data or alternative data. Financial instruments
 supported include stocks, ETF and futures.
 
 .. literalinclude:: ../../tests/examples/test_readme.py
-    :language: python
-    :pyobject: TestReadme.test_backtest_60_40
-    :tab-width: 0
-    :dedent: 8
-    :lines: 3-
+   :language: python
+   :pyobject: TestReadme.test_backtest_60_40
+   :dedent: 8
+   :lines: 3-
 
-.. figure:: docs/source/images/tearsheet.png
-
-
-.. code-block:: python
-
-    track_record.fig_net_liquidation_value()
-
-
-.. figure:: docs/source/images/fig_net_liquidation_value.png
+.. figure:: https://tradingenv.blob.core.windows.net/images/tearsheet.png
+|
+.. figure:: https://tradingenv.blob.core.windows.net/images/fig_net_liquidation_value.png
 
 
 

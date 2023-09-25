@@ -1,2 +1,2 @@
 .. Symlink as explained in https://stackoverflow.com/questions/10199233
-.. include:: ../../CHANGELOG.rst
+.. include:: ../../changelog.rst
