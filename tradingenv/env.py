@@ -641,10 +641,11 @@ class TradingEnvXY(TradingEnv):
         end = end or Y.last_valid_index()
         end = min(end, Y.last_valid_index())
         transformer_end = transformer_end or end
-
-        risk_free = rate.squeeze().loc[start:end]
-        risk_free.name = Rate(risk_free.name)
-        if not risk_free.between(-1, +1).all():
+        if rate is None:
+            rate = pd.Series(name='Zero Rate', dtype=float)
+        rate = rate.squeeze().loc[start:end]
+        rate.name = Rate(rate.name)
+        if not rate.between(-1, +1).all():
             raise ValueError(
                 "Argument `rate` is expressed as a percentage and it "
                 "shouldn't. For example, 1% should be expressed as 0.01."
@@ -697,8 +698,8 @@ class TradingEnvXY(TradingEnv):
             action_space=BoxPortfolio(Y.columns, max_short, max_long, margin=margin),
             state=State(X.columns.size, window),
             reward=reward,
-            transmitter=self._make_transmitter(X, Y, calendar, spread, risk_free, folds, window),
-            broker_fees=BrokerFees(markup, risk_free.name, fee),
+            transmitter=self._make_transmitter(X, Y, calendar, spread, rate, folds, window),
+            broker_fees=BrokerFees(markup, rate.name, fee),
             steps_delay=steps_delay,
             episode_length=episode_length,
             sampling_span=sampling_span,

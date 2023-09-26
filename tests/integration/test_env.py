@@ -1,6 +1,6 @@
 import gym
 import gym.utils.seeding
-from tradingenv.env import TradingEnv
+from tradingenv.env import TradingEnv, TradingEnvXY
 from tradingenv.events import IEvent, EventReset, EventNBBO, EventDone
 from tradingenv.transmitter import Transmitter, AsynchronousTransmitter
 from tradingenv.spaces import DiscretePortfolio, BoxPortfolio
@@ -891,3 +891,26 @@ class TestTradingEnvFutures:
         while not done:
             action = env.action_space.sample()
             state, reward, done, info = env.step(action)
+
+
+class TestTradingEnvXY:
+    def _make_dataset(self, seed: int = 0):
+        np.random.seed(0)
+        dates = pd.date_range('2022-01-01', periods=100, freq='B')
+        nr_obs = len(dates)
+        nr_features = 5
+        X = pd.DataFrame(np.random.normal(0, 1, [nr_obs, nr_features]), dates)
+        y = pd.DataFrame(np.random.normal(0, 0.15 / np.sqrt(252), len(dates)), dates)
+        y = (1 + y).cumprod()
+        y /= y.iloc[0]
+        y *= 100
+        return X, y
+
+    def test_can_instance_just_with_data(self):
+        X, y = self._make_dataset()
+        env = TradingEnvXY(X, y)
+
+    def test_can_backtest_random_policy_just_with_data(self):
+        X, y = self._make_dataset()
+        env = TradingEnvXY(X, y)
+        track_record = env.backtest()
