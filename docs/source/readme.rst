@@ -42,29 +42,35 @@ dependencies that can be installed with
    pip install tradingenv[extra]
 
 
-Example - Reinforcement Learning
-================================
+Example - Reinforcement Learning - Lazy Initialisation
+======================================================
 The package is built upon the industry-standard gym_ and therefore can be used
 in conjunction with popular reinforcement learning frameworks including rllib_
 and stable-baselines3_.
 
-.. only:: html
 
-   .. literalinclude:: ../../tests/examples/test_readme.py
-      :language: python
-      :pyobject: TestReadme.test_instancing_env
-      :tab-width: 0
-      :dedent: 8
-      :lines: 2-
+.. literalinclude:: ../../tests/examples/test_readme.py
+  :language: python
+  :pyobject: TestReadme.test_instancing_env_lazy
+  :tab-width: 0
+  :dedent: 8
+  :start-after: # BEGIN OMIT
+  :end-before: # END OMIT
 
-.. only:: not html
 
-   .. code-block:: python
+Example - Reinforcement Learning - Custom Initialisation
+========================================================
+Use custom initialisation to personalise the design of the environment,
+including the reward function, transaction costs, observation window and leverage.
 
-      # Your Python code here
-      import tradingenv
-      print('Hello')
 
+.. literalinclude:: ../../tests/examples/test_readme.py
+  :language: python
+  :pyobject: TestReadme.test_instancing_env_custom
+  :tab-width: 0
+  :dedent: 8
+  :start-after: # BEGIN OMIT
+  :end-before: # END OMIT
 
 
 Example - Backtesting
@@ -75,13 +81,13 @@ run simulations either using irregularly sampled trade and quotes data, daily
 closing prices, monthly economic data or alternative data. Financial instruments
 supported include stocks, ETF and futures.
 
-.. only:: html
 
-   .. literalinclude:: ../../tests/examples/test_readme.py
-      :language: python
-      :pyobject: TestReadme.test_backtest_60_40
-      :dedent: 8
-      :lines: 3-
+.. literalinclude:: ../../tests/examples/test_readme.py
+  :language: python
+  :pyobject: TestReadme.test_backtest_60_40
+  :tab-width: 0
+  :dedent: 8
+  :start-after: # BEGIN OMIT
 
 
 .. figure:: https://tradingenv.blob.core.windows.net/images/tearsheet.png

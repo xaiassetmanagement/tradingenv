@@ -38,7 +38,8 @@ class TestReadme:
         return env, prices
 
     def test_backtest_60_40_old(self):
-        env, prices = self.test_instancing_env()
+        env, prices = self.test_instancing_env_detailed()
+        # BEGIN OMIT
         from tradingenv.policy import AbstractPolicy
 
         class Portfolio6040(AbstractPolicy):
@@ -58,8 +59,10 @@ class TestReadme:
         # The track_record object stores the results of your backtest.
         track_record.tearsheet()
         track_record.fig_net_liquidation_value()
+        # END OMIT
 
-    def test_instancing_env(self):
+    def test_instancing_env_lazy(self):
+        # BEGIN OMIT
         from tradingenv.env import TradingEnvXY
         import yfinance
 
@@ -72,7 +75,20 @@ class TestReadme:
         # Default instance of the trading environment.
         env = TradingEnvXY(X, Y)
 
-        # Configured the trading environment.
+        # Run an episode in the environment.
+        obs = env.reset()
+        done = False
+        while not done:
+            action = env.action_space.sample()
+            obs, reward, done, info = env.step(action)
+        # END OMIT
+        return env, data, X, Y
+
+    def test_instancing_env_custom(self):
+        from tradingenv.env import TradingEnvXY
+        env, data, X, Y = self.test_instancing_env_lazy()
+
+        # BEGIN OMIT
         env = TradingEnvXY(
             X=X,                      # Use moving averages crossover as features
             Y=Y,                      # to trade SPY and TLT ETFs.
@@ -93,18 +109,13 @@ class TestReadme:
             max_short=-1.,            # the maximum short position is 100% of the portfolio.
             calendar='NYSE',          # Use the NYSE calendar to schedule trading days.
         )
-
-        # OpenAI/gym protocol. Run an episode in the environment.
-        # env can be passed to RL agents of ray/rllib or stable-baselines3.
-        obs = env.reset()
-        done = False
-        while not done:
-            action = env.action_space.sample()
-            obs, reward, done, info = env.step(action)
+        # END OMIT
         return env, data
 
     def test_backtest_60_40(self):
-        env, data = self.test_instancing_env()
+        env, data, X, Y = self.test_instancing_env_lazy()
+
+        # BEGIN OMIT
         from tradingenv.policy import AbstractPolicy
 
         class Portfolio6040(AbstractPolicy):
@@ -123,3 +134,4 @@ class TestReadme:
 
         # The track_record object stores the results of your backtest.
         track_record.tearsheet()
+        # END OMIT

@@ -63,8 +63,8 @@ dependencies that can be installed with</p>
 </pre></div>
 </div>
 </section>
-<section id="example-reinforcement-learning">
-<h1>Example - Reinforcement Learning<a class="headerlink" href="#example-reinforcement-learning" title="Link to this heading">¶</a></h1>
+<section id="example-reinforcement-learning-lazy-initialisation">
+<h1>Example - Reinforcement Learning - Lazy Initialisation<a class="headerlink" href="#example-reinforcement-learning-lazy-initialisation" title="Link to this heading">¶</a></h1>
 <p>The package is built upon the industry-standard <a class="reference external" href="https://github.com/openai/gym">gym</a> and therefore can be used
 in conjunction with popular reinforcement learning frameworks including <a class="reference external" href="https://docs.ray.io/en/latest/rllib/">rllib</a>
 and <a class="reference external" href="https://github.com/hill-a/stable-baselines">stable-baselines3</a>.</p>
@@ -80,8 +80,20 @@ and <a class="reference external" href="https://github.com/hill-a/stable-baselin
 <span class="c1"># Default instance of the trading environment.</span>
 <span class="n">env</span> <span class="o">=</span> <span class="n">TradingEnvXY</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
 
-<span class="c1"># Configured the trading environment.</span>
-<span class="n">env</span> <span class="o">=</span> <span class="n">TradingEnvXY</span><span class="p">(</span>
+<span class="c1"># Run an episode in the environment.</span>
+<span class="n">obs</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">while</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
+    <span class="n">action</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span>
+    <span class="n">obs</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="example-reinforcement-learning-custom-initialisation">
+<h1>Example - Reinforcement Learning - Custom Initialisation<a class="headerlink" href="#example-reinforcement-learning-custom-initialisation" title="Link to this heading">¶</a></h1>
+<p>Use custom initialisation to personalise the design of the environment,
+including the reward function, transaction costs, observation window and leverage.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">env</span> <span class="o">=</span> <span class="n">TradingEnvXY</span><span class="p">(</span>
     <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>                      <span class="c1"># Use moving averages crossover as features</span>
     <span class="n">Y</span><span class="o">=</span><span class="n">Y</span><span class="p">,</span>                      <span class="c1"># to trade SPY and TLT ETFs.</span>
     <span class="n">transformer</span><span class="o">=</span><span class="s1">&#39;z-score&#39;</span><span class="p">,</span>    <span class="c1"># Features are standardised to N(0, 1).</span>
@@ -101,15 +113,6 @@ and <a class="reference external" href="https://github.com/hill-a/stable-baselin
     <span class="n">max_short</span><span class="o">=-</span><span class="mf">1.</span><span class="p">,</span>            <span class="c1"># the maximum short position is 100% of the portfolio.</span>
     <span class="n">calendar</span><span class="o">=</span><span class="s1">&#39;NYSE&#39;</span><span class="p">,</span>          <span class="c1"># Use the NYSE calendar to schedule trading days.</span>
 <span class="p">)</span>
-
-<span class="c1"># OpenAI/gym protocol. Run an episode in the environment.</span>
-<span class="c1"># env can be passed to RL agents of ray/rllib or stable-baselines3.</span>
-<span class="n">obs</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="k">while</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
-    <span class="n">action</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span>
-    <span class="n">obs</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
-<span class="k">return</span> <span class="n">env</span><span class="p">,</span> <span class="n">data</span>
 </pre></div>
 </div>
 </section>
@@ -229,7 +232,8 @@ assuming that the folder <code class="code docutils literal notranslate"><span c
     <ul>
 <li><a class="reference internal" href="#">Introduction</a></li>
 <li><a class="reference internal" href="#installation">Installation</a></li>
-<li><a class="reference internal" href="#example-reinforcement-learning">Example - Reinforcement Learning</a></li>
+<li><a class="reference internal" href="#example-reinforcement-learning-lazy-initialisation">Example - Reinforcement Learning - Lazy Initialisation</a></li>
+<li><a class="reference internal" href="#example-reinforcement-learning-custom-initialisation">Example - Reinforcement Learning - Custom Initialisation</a></li>
 <li><a class="reference internal" href="#example-backtesting">Example - Backtesting</a></li>
 <li><a class="reference internal" href="#relevant-projects">Relevant projects</a></li>
 <li><a class="reference internal" href="#developers">Developers</a></li>
