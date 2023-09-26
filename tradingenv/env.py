@@ -514,11 +514,14 @@ class TradingEnvXY(TradingEnv):
                  transformer: str = 'yeo-johnson',
                  transformer_end: str = None,
                  reward: str = 'logret',
+                 cash: float = 100,
                  spread: float = 0.0002,
                  margin: float = 0.02,
                  markup: float = 0.005,
-                 rate: pd.Series = None,
                  fee: float = 0.0002,
+                 fixed: float = 0.,
+                 rate: pd.Series = None,
+                 latency: float = 0,
                  steps_delay: int = 1,
                  window: int = 1,
                  clip: float = 5.,
@@ -566,6 +569,8 @@ class TradingEnvXY(TradingEnv):
         reward
             The reward function. At present, the only supported reawrd function
             is 'logreturn'.
+        cash : float
+            Each simulation starts with this amount of cash, 100 by default.
         spread
             Bid-ask spread of the assets being traded. It's 0.0002 by default,
             that is 0.02%.
@@ -587,6 +592,15 @@ class TradingEnvXY(TradingEnv):
         fee
             The broker will charge a fee proportional to the notional traded
             value. This is 0.0002 (0.02%) by default.
+        fixed : float
+            Fixed broker fees to be applied to each trade, regardless the
+            notional traded value of trade.
+        latency : float
+            It defines the delay in seconds between the timestep at which the
+            portfolio rebalancing decision was made and the time at which the
+            trades to rebalance the portfolio are executed. This option can
+            be useful when dealing with intraday data. For daily or even slower
+            data you should use `steps_delay` instead.
         steps_delay : int
             Number of days that it takes to implement trades. This is 1 by
             default. Note: if zero, then trades are placed in the same instant
@@ -657,7 +671,7 @@ class TradingEnvXY(TradingEnv):
         if isinstance(transformer, TransformerMixin):
             self.transformer = transformer
         elif transformer == 'z-score':
-            self.transformer = StandardScaler(transformer)
+            self.transformer = StandardScaler()
         elif transformer == 'yeo-johnson':
             self.transformer = PowerTransformer(transformer)
         else:
@@ -672,7 +686,7 @@ class TradingEnvXY(TradingEnv):
             self.transformer.fit(X.loc[:transformer_end])
 
         if reward == 'logret':
-            scale = np.log(pd.DataFrame(Y).loc[start:transformer_end]).diff().std().item()
+            scale = np.log(pd.DataFrame(Y).loc[start:transformer_end]).diff().std().mean().item()
             reward = LogReturn(scale=float(scale), clip=2.)
         else:
             raise NotImplementedError(f'Unsupported reward: {reward}')
@@ -699,7 +713,9 @@ class TradingEnvXY(TradingEnv):
             state=State(X.columns.size, window),
             reward=reward,
             transmitter=self._make_transmitter(X, Y, calendar, spread, rate, folds, window),
-            broker_fees=BrokerFees(markup, rate.name, fee),
+            broker_fees=BrokerFees(markup, rate.name, fee, fixed),
+            initial_cash=cash,
+            latency=latency,
             steps_delay=steps_delay,
             episode_length=episode_length,
             sampling_span=sampling_span,

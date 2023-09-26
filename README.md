@@ -39,39 +39,42 @@ conjunction with popular reinforcement learning frameworks including
 [stable-baselines3](https://github.com/hill-a/stable-baselines).
 
 ``` python
-from tradingenv import TradingEnv
-from tradingenv.contracts import ETF
-from tradingenv.spaces import BoxPortfolio
-from tradingenv.state import IState
-from tradingenv.rewards import RewardLogReturn
-from tradingenv.broker.fees import BrokerFees
-from tradingenv.policy import AbstractPolicy
+from tradingenv.env import TradingEnvXY
 import yfinance
 
-# Load prices of SPY ETF and TLT ETF from Yahoo Finance as pandas.DataFrame.
-prices = yfinance.Tickers(['SPY', 'TLT', 'TBIL']).history(period="12mo")['Close'].tz_localize(None)
+# Load data from Yahoo Finance.
+tickers = yfinance.Tickers(['SPY', 'TLT', 'TBIL', '^IRX'])
+data = tickers.history(period="12mo", progress=False)['Close'].tz_localize(None)
+Y = data[['SPY', 'TLT']]
+X = Y.rolling(12).mean() - Y.rolling(26).mean()
 
-# Specify contract type.
-prices.columns = [ETF('SPY'), ETF('TLT'), ETF('TBIL')]
+# Lazy initialization of the trading environment.
+env = TradingEnvXY(X, Y)
 
-# Instance the trading environment.
-env = TradingEnv(
-    action_space=BoxPortfolio([ETF('SPY'), ETF('TLT')], low=-1, high=+1, as_weights=True),
-    state=IState(),
-    reward=RewardLogReturn(),
-    prices=prices,
-    initial_cash=1_000_000,
-    latency=0,  # seconds
-    steps_delay=1,  # trades are implemented with a delay on one step
-    broker_fees=BrokerFees(
-        markup=0.005,  # 0.5% broker markup on deposit rate
-        proportional=0.0001,  # 0.01% fee of traded notional
-        fixed=1,  # $1 per trade
-    ),
+# Custom initialization of the trading environment.
+env = TradingEnvXY(
+    X=X,                      # Use moving averages crossover as features
+    Y=Y,                      # to trade SPY and TLT ETFs.
+    transformer='z-score',    # Features are standardised to N(0, 1).
+    reward='logret',          # Reward is the log return of the portfolio at each step,
+    cash=1000000,             # starting with $1M.
+    spread=0.0002,            # Transaction costs include a 0.02% spread,
+    markup=0.005,             # a 0.5% broker markup on deposit rate,
+    fee=0.0002,               # a 0.02% dealing fee of traded notional
+    fixed=1,                  # and a $1 fixed fee per trade.
+    margin=0.02,              # Do not trade if trade size is smaller than 2% of the portfolio.
+    rate=data['^IRX'] / 100,  # Rate used to compute the yield on idle cash and cost of leverage.
+    latency=0,                # Trades are implemented with no latency
+    steps_delay=1,            # but a delay of one day.
+    window=1,                 # The observation is the current state of the market,
+    clip=5.,                  # clipped between -5 and +5 standard deviations.
+    max_long=1.5,             # The maximum long position is 150% of the portfolio,
+    max_short=-1.,            # the maximum short position is 100% of the portfolio.
+    calendar='NYSE',          # Use the NYSE calendar to schedule trading days.
 )
 
 # OpenAI/gym protocol. Run an episode in the environment.
-# env can be passed to RL agents of ray/rllib or stable-baselines3.
+# env can be passed to RL agents of ray/rllib, stable-baselines3 or ElegantRL for training.
 obs = env.reset()
 done = False
 while not done:

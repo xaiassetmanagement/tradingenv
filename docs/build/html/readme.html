@@ -67,32 +67,38 @@ dependencies that can be installed with</p>
 <p>The package is built upon the industry-standard <a class="reference external" href="https://github.com/openai/gym">gym</a> and therefore can be used
 in conjunction with popular reinforcement learning frameworks including <a class="reference external" href="https://docs.ray.io/en/latest/rllib/">rllib</a>
 and <a class="reference external" href="https://github.com/hill-a/stable-baselines">stable-baselines3</a>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tradingenv</span> <span class="kn">import</span> <span class="n">TradingEnv</span>
-<span class="kn">from</span> <span class="nn">tradingenv.contracts</span> <span class="kn">import</span> <span class="n">ETF</span>
-<span class="kn">from</span> <span class="nn">tradingenv.spaces</span> <span class="kn">import</span> <span class="n">BoxPortfolio</span>
-<span class="kn">from</span> <span class="nn">tradingenv.state</span> <span class="kn">import</span> <span class="n">IState</span>
-<span class="kn">from</span> <span class="nn">tradingenv.rewards</span> <span class="kn">import</span> <span class="n">RewardLogReturn</span>
-<span class="kn">from</span> <span class="nn">tradingenv.broker.fees</span> <span class="kn">import</span> <span class="n">BrokerFees</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tradingenv.env</span> <span class="kn">import</span> <span class="n">TradingEnvXY</span>
 <span class="kn">import</span> <span class="nn">yfinance</span>
 
-<span class="c1"># Load close prices from Yahoo Finance and specify contract types.</span>
-<span class="n">prices</span> <span class="o">=</span> <span class="n">yfinance</span><span class="o">.</span><span class="n">Tickers</span><span class="p">([</span><span class="s1">&#39;SPY&#39;</span><span class="p">,</span> <span class="s1">&#39;TLT&#39;</span><span class="p">,</span> <span class="s1">&#39;TBIL&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">history</span><span class="p">(</span><span class="n">period</span><span class="o">=</span><span class="s2">&quot;12mo&quot;</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="s1">&#39;Close&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tz_localize</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-<span class="n">prices</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">ETF</span><span class="p">(</span><span class="s1">&#39;SPY&#39;</span><span class="p">),</span> <span class="n">ETF</span><span class="p">(</span><span class="s1">&#39;TLT&#39;</span><span class="p">),</span> <span class="n">ETF</span><span class="p">(</span><span class="s1">&#39;TBIL&#39;</span><span class="p">)]</span>
+<span class="c1"># Load data from Yahoo Finance.</span>
+<span class="n">tickers</span> <span class="o">=</span> <span class="n">yfinance</span><span class="o">.</span><span class="n">Tickers</span><span class="p">([</span><span class="s1">&#39;SPY&#39;</span><span class="p">,</span> <span class="s1">&#39;TLT&#39;</span><span class="p">,</span> <span class="s1">&#39;TBIL&#39;</span><span class="p">,</span> <span class="s1">&#39;^IRX&#39;</span><span class="p">])</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">tickers</span><span class="o">.</span><span class="n">history</span><span class="p">(</span><span class="n">period</span><span class="o">=</span><span class="s2">&quot;12mo&quot;</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="s1">&#39;Close&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tz_localize</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">Y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[[</span><span class="s1">&#39;SPY&#39;</span><span class="p">,</span> <span class="s1">&#39;TLT&#39;</span><span class="p">]]</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">Y</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">-</span> <span class="n">Y</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="mi">26</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
 
-<span class="c1"># Instance the trading environment.</span>
-<span class="n">env</span> <span class="o">=</span> <span class="n">TradingEnv</span><span class="p">(</span>
-    <span class="n">action_space</span><span class="o">=</span><span class="n">BoxPortfolio</span><span class="p">([</span><span class="n">ETF</span><span class="p">(</span><span class="s1">&#39;SPY&#39;</span><span class="p">),</span> <span class="n">ETF</span><span class="p">(</span><span class="s1">&#39;TLT&#39;</span><span class="p">)],</span> <span class="n">low</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">high</span><span class="o">=+</span><span class="mi">1</span><span class="p">,</span> <span class="n">as_weights</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-    <span class="n">state</span><span class="o">=</span><span class="n">IState</span><span class="p">(),</span>
-    <span class="n">reward</span><span class="o">=</span><span class="n">RewardLogReturn</span><span class="p">(),</span>
-    <span class="n">prices</span><span class="o">=</span><span class="n">prices</span><span class="p">,</span>
-    <span class="n">initial_cash</span><span class="o">=</span><span class="mi">1_000_000</span><span class="p">,</span>
-    <span class="n">latency</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>  <span class="c1"># seconds</span>
-    <span class="n">steps_delay</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># trades are implemented with a delay on one step</span>
-    <span class="n">broker_fees</span><span class="o">=</span><span class="n">BrokerFees</span><span class="p">(</span>
-        <span class="n">markup</span><span class="o">=</span><span class="mf">0.005</span><span class="p">,</span>  <span class="c1"># 0.5% broker markup on deposit rate</span>
-        <span class="n">proportional</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span>  <span class="c1"># 0.01% fee of traded notional</span>
-        <span class="n">fixed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># $1 per trade</span>
-    <span class="p">),</span>
+<span class="c1"># Default instance of the trading environment.</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">TradingEnvXY</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+
+<span class="c1"># Configured the trading environment.</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">TradingEnvXY</span><span class="p">(</span>
+    <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>                      <span class="c1"># Use moving averages crossover as features</span>
+    <span class="n">Y</span><span class="o">=</span><span class="n">Y</span><span class="p">,</span>                      <span class="c1"># to trade SPY and TLT ETFs.</span>
+    <span class="n">transformer</span><span class="o">=</span><span class="s1">&#39;z-score&#39;</span><span class="p">,</span>    <span class="c1"># Features are standardised to N(0, 1).</span>
+    <span class="n">reward</span><span class="o">=</span><span class="s1">&#39;logret&#39;</span><span class="p">,</span>          <span class="c1"># Reward is the log return of the portfolio at each step,</span>
+    <span class="n">cash</span><span class="o">=</span><span class="mi">1000000</span><span class="p">,</span>             <span class="c1"># starting with $1M.</span>
+    <span class="n">spread</span><span class="o">=</span><span class="mf">0.0002</span><span class="p">,</span>            <span class="c1"># Transaction costs include a 0.02% spread,</span>
+    <span class="n">markup</span><span class="o">=</span><span class="mf">0.005</span><span class="p">,</span>             <span class="c1"># a 0.5% broker markup on deposit rate,</span>
+    <span class="n">fee</span><span class="o">=</span><span class="mf">0.0002</span><span class="p">,</span>               <span class="c1"># a 0.02% dealing fee of traded notional</span>
+    <span class="n">fixed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>                  <span class="c1"># and a $1 fixed fee per trade.</span>
+    <span class="n">margin</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span>              <span class="c1"># Do not trade if trade size is smaller than 2% of the portfolio.</span>
+    <span class="n">rate</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;^IRX&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span>  <span class="c1"># Rate used to compute the yield on idle cash and cost of leverage.</span>
+    <span class="n">latency</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>                <span class="c1"># Trades are implemented with no latency</span>
+    <span class="n">steps_delay</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>            <span class="c1"># but a delay of one day.</span>
+    <span class="n">window</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>                 <span class="c1"># The observation is the current state of the market,</span>
+    <span class="n">clip</span><span class="o">=</span><span class="mf">5.</span><span class="p">,</span>                  <span class="c1"># clipped between -5 and +5 standard deviations.</span>
+    <span class="n">max_long</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>             <span class="c1"># The maximum long position is 150% of the portfolio,</span>
+    <span class="n">max_short</span><span class="o">=-</span><span class="mf">1.</span><span class="p">,</span>            <span class="c1"># the maximum short position is 100% of the portfolio.</span>
+    <span class="n">calendar</span><span class="o">=</span><span class="s1">&#39;NYSE&#39;</span><span class="p">,</span>          <span class="c1"># Use the NYSE calendar to schedule trading days.</span>
 <span class="p">)</span>
 
 <span class="c1"># OpenAI/gym protocol. Run an episode in the environment.</span>
@@ -102,7 +108,7 @@ and <a class="reference external" href="https://github.com/hill-a/stable-baselin
 <span class="k">while</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
     <span class="n">action</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span>
     <span class="n">obs</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
-<span class="k">return</span> <span class="n">env</span><span class="p">,</span> <span class="n">prices</span>
+<span class="k">return</span> <span class="n">env</span><span class="p">,</span> <span class="n">data</span>
 </pre></div>
 </div>
 </section>
@@ -125,13 +131,12 @@ supported include stocks, ETF and futures.</p>
 <span class="c1"># Run the backtest.</span>
 <span class="n">track_record</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">backtest</span><span class="p">(</span>
     <span class="n">policy</span><span class="o">=</span><span class="n">Portfolio6040</span><span class="p">(),</span>
-    <span class="n">risk_free</span><span class="o">=</span><span class="n">prices</span><span class="p">[</span><span class="s1">&#39;TBIL&#39;</span><span class="p">],</span>
-    <span class="n">benchmark</span><span class="o">=</span><span class="n">prices</span><span class="p">[</span><span class="s1">&#39;SPY&#39;</span><span class="p">],</span>
+    <span class="n">risk_free</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;TBIL&#39;</span><span class="p">],</span>
+    <span class="n">benchmark</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;SPY&#39;</span><span class="p">],</span>
 <span class="p">)</span>
 
 <span class="c1"># The track_record object stores the results of your backtest.</span>
 <span class="n">track_record</span><span class="o">.</span><span class="n">tearsheet</span><span class="p">()</span>
-<span class="n">track_record</span><span class="o">.</span><span class="n">fig_net_liquidation_value</span><span class="p">()</span>
 </pre></div>
 </div>
 <figure class="align-default">
