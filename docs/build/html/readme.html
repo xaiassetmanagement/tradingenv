@@ -29,10 +29,17 @@
 
           <div class="body" role="main">
             
-  <a href="https://github.com/xaiassetmanagement/tradingenv/actions/workflows/software-tests.yml">
+  <figure class="align-center">
+<img alt="https://tradingenv.blob.core.windows.net/images/logo-background-cropped.png" src="https://tradingenv.blob.core.windows.net/images/logo-background-cropped.png" />
+</figure>
+<br/>
+<a href="https://https://github.com/xaiassetmanagement/tradingenv/actions/workflows/build-docs.yml">
+    <img src="https://github.com/xaiassetmanagement/tradingenv/actions/workflows/build-docs.yml/badge.svg" alt="No message"/></a>
+<a href="https://github.com/xaiassetmanagement/tradingenv/actions/workflows/software-tests.yml">
     <img src="https://github.com/xaiassetmanagement/tradingenv/actions/workflows/software-tests.yml/badge.svg" alt="No message"/></a>
 <a href="https://github.com/xaiassetmanagement/tradingenv/actions">
     <img src="https://raw.githubusercontent.com/xaiassetmanagement/tradingenv/coverage-badge/coverage.svg" alt="No message"/></a>
+<br/>
 <a href="https://www.python.org">
     <img src="https://img.shields.io/pypi/pyversions/shap" alt="No message"/></a>
 <a href="https://opensource.org/licenses/Apache-2.0">
@@ -41,6 +48,19 @@
 <p>Backtest trading strategies or train reinforcement learning agents with
 <code class="code docutils literal notranslate"><span class="pre">tradingenv</span></code>, an event-driven market simulator that implements the
 OpenAI/gym protocol.</p>
+</section>
+<section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h1>
+<p>tradingenv supports Python 3.7 or newer versions. The following command line
+will install the latest software version.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install tradingenv</span>
+</pre></div>
+</div>
+<p>Notebooks, software tests and building the documentation require extra
+dependencies that can be installed with</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install tradingenv[extra]</span>
+</pre></div>
+</div>
 </section>
 <section id="example-reinforcement-learning">
 <h1>Example - Reinforcement Learning<a class="headerlink" href="#example-reinforcement-learning" title="Link to this heading">¶</a></h1>
@@ -53,13 +73,10 @@ and <a class="reference external" href="https://github.com/hill-a/stable-baselin
 <span class="kn">from</span> <span class="nn">tradingenv.state</span> <span class="kn">import</span> <span class="n">IState</span>
 <span class="kn">from</span> <span class="nn">tradingenv.rewards</span> <span class="kn">import</span> <span class="n">RewardLogReturn</span>
 <span class="kn">from</span> <span class="nn">tradingenv.broker.fees</span> <span class="kn">import</span> <span class="n">BrokerFees</span>
-<span class="kn">from</span> <span class="nn">tradingenv.policy</span> <span class="kn">import</span> <span class="n">AbstractPolicy</span>
 <span class="kn">import</span> <span class="nn">yfinance</span>
 
-<span class="c1"># Load prices of SPY ETF and TLT ETF from Yahoo Finance as pandas.DataFrame.</span>
-<span class="n">prices</span> <span class="o">=</span> <span class="n">yfinance</span><span class="o">.</span><span class="n">Tickers</span><span class="p">([</span><span class="s1">&#39;SPY&#39;</span><span class="p">,</span> <span class="s1">&#39;TLT&#39;</span><span class="p">,</span> <span class="s1">&#39;TBIL&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">history</span><span class="p">(</span><span class="n">period</span><span class="o">=</span><span class="s2">&quot;12mo&quot;</span><span class="p">)[</span><span class="s1">&#39;Close&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tz_localize</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-
-<span class="c1"># Specify contract type.</span>
+<span class="c1"># Load close prices from Yahoo Finance and specify contract types.</span>
+<span class="n">prices</span> <span class="o">=</span> <span class="n">yfinance</span><span class="o">.</span><span class="n">Tickers</span><span class="p">([</span><span class="s1">&#39;SPY&#39;</span><span class="p">,</span> <span class="s1">&#39;TLT&#39;</span><span class="p">,</span> <span class="s1">&#39;TBIL&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">history</span><span class="p">(</span><span class="n">period</span><span class="o">=</span><span class="s2">&quot;12mo&quot;</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="s1">&#39;Close&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tz_localize</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 <span class="n">prices</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">ETF</span><span class="p">(</span><span class="s1">&#39;SPY&#39;</span><span class="p">),</span> <span class="n">ETF</span><span class="p">(</span><span class="s1">&#39;TLT&#39;</span><span class="p">),</span> <span class="n">ETF</span><span class="p">(</span><span class="s1">&#39;TBIL&#39;</span><span class="p">)]</span>
 
 <span class="c1"># Instance the trading environment.</span>
@@ -85,6 +102,7 @@ and <a class="reference external" href="https://github.com/hill-a/stable-baselin
 <span class="k">while</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
     <span class="n">action</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span>
     <span class="n">obs</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+<span class="k">return</span> <span class="n">env</span><span class="p">,</span> <span class="n">prices</span>
 </pre></div>
 </div>
 </section>
@@ -95,7 +113,9 @@ respect to the type and time-frequency of the events. This means that you can
 run simulations either using irregularly sampled trade and quotes data, daily
 closing prices, monthly economic data or alternative data. Financial instruments
 supported include stocks, ETF and futures.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Portfolio6040</span><span class="p">(</span><span class="n">AbstractPolicy</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tradingenv.policy</span> <span class="kn">import</span> <span class="n">AbstractPolicy</span>
+
+<span class="k">class</span> <span class="nc">Portfolio6040</span><span class="p">(</span><span class="n">AbstractPolicy</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Implement logic of your investment strategy or RL agent here.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">act</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
@@ -111,30 +131,18 @@ supported include stocks, ETF and futures.</p>
 
 <span class="c1"># The track_record object stores the results of your backtest.</span>
 <span class="n">track_record</span><span class="o">.</span><span class="n">tearsheet</span><span class="p">()</span>
+<span class="n">track_record</span><span class="o">.</span><span class="n">fig_net_liquidation_value</span><span class="p">()</span>
 </pre></div>
 </div>
 <figure class="align-default">
-<img alt="docs/source/images/tearsheet.png" src="docs/source/images/tearsheet.png" />
+<img alt="https://tradingenv.blob.core.windows.net/images/tearsheet.png" src="https://tradingenv.blob.core.windows.net/images/tearsheet.png" />
 </figure>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">track_record</span><span class="o">.</span><span class="n">fig_net_liquidation_value</span><span class="p">()</span>
-</pre></div>
+<div class="line-block">
+<div class="line"><br /></div>
 </div>
 <figure class="align-default">
-<img alt="docs/source/images/fig_net_liquidation_value.png" src="docs/source/images/fig_net_liquidation_value.png" />
+<img alt="https://tradingenv.blob.core.windows.net/images/fig_net_liquidation_value.png" src="https://tradingenv.blob.core.windows.net/images/fig_net_liquidation_value.png" />
 </figure>
-</section>
-<section id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h1>
-<p>tradingenv supports Python 3.8 or newer versions. The following command line
-will install the latest software version.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install tradingenv</span>
-</pre></div>
-</div>
-<p>Notebooks, software tests and building the documentation require extra
-dependencies that can be installed with</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install tradingenv[extra]</span>
-</pre></div>
-</div>
 </section>
 <section id="relevant-projects">
 <h1>Relevant projects<a class="headerlink" href="#relevant-projects" title="Link to this heading">¶</a></h1>
@@ -189,9 +197,9 @@ assuming that the folder <code class="code docutils literal notranslate"><span c
     <h3><a href="index.html">Table of Contents</a></h3>
     <ul>
 <li><a class="reference internal" href="#">Introduction</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#example-reinforcement-learning">Example - Reinforcement Learning</a></li>
 <li><a class="reference internal" href="#example-backtesting">Example - Backtesting</a></li>
-<li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#relevant-projects">Relevant projects</a></li>
 <li><a class="reference internal" href="#developers">Developers</a></li>
 </ul>
@@ -202,10 +210,10 @@ assuming that the folder <code class="code docutils literal notranslate"><span c
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2019, Federico Fontana.
+      &copy;2023, Federico Fontana.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
       
       |

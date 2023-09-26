@@ -5,10 +5,10 @@ from tradingenv.broker.broker import Broker, EndOfEpisodeError
 from tradingenv.broker.track_record import TrackRecord
 from tradingenv.broker.fees import IBrokerFees, BrokerFees
 from tradingenv.exchange import Exchange
-from tradingenv.contracts import AbstractContract, Cash
-from tradingenv.rewards import make_reward, AbstractReward, RewardSimpleReturn
+from tradingenv.contracts import AbstractContract, Cash, Asset, Rate
+from tradingenv.rewards import make_reward, AbstractReward, RewardSimpleReturn, LogReturn
 from tradingenv.policy import make_policy
-from tradingenv.state import IState
+from tradingenv.state import IState, State
 from tradingenv.features import Feature
 from tradingenv.events import (
     Observer,
@@ -18,6 +18,7 @@ from tradingenv.events import (
     EventDone,
     EventNBBO,
     EventNewDate,
+    EventNewObservation,
 )
 from tradingenv.transmitter import (
     AbstractTransmitter,
@@ -25,11 +26,16 @@ from tradingenv.transmitter import (
     Transmitter,
     TRAINING_SET,
 )
+from sklearn.preprocessing import PowerTransformer, StandardScaler
+from sklearn.base import TransformerMixin
+from sklearn.utils.validation import check_is_fitted
+from sklearn.exceptions import NotFittedError
 from typing import Tuple, Sequence, Union, List, Any, Optional
 from pandas.core.generic import NDFrame
-from datetime import datetime
+from datetime import datetime, timedelta
 from tqdm import tqdm
 from collections import deque, defaultdict
+import pandas_market_calendars
 import pandas as pd
 import numpy as np
 import threading
@@ -494,3 +500,238 @@ class TradingEnv(gym.Env):
         """Returns series indicating how many steps have been taken each
         day in the environment. """
         return pd.Series(self._visits).sort_index()
+
+
+class TradingEnvXY(TradingEnv):
+    """High-level wrapper of TradingEnv that allows to pass features (X) and
+    prices for assets to be traded (Y) as pandas.DataFrame."""
+
+    def __init__(self,
+                 X: pd.DataFrame,
+                 Y: pd.DataFrame,
+                 start: datetime = None,
+                 end: datetime = None,
+                 transformer: str = 'yeo-johnson',
+                 transformer_end: str = None,
+                 reward: str = 'logret',
+                 spread: float = 0.0002,
+                 margin: float = 0.02,
+                 markup: float = 0.005,
+                 rate: pd.Series = None,
+                 fee: float = 0.0002,
+                 steps_delay: int = 1,
+                 window: int = 1,
+                 clip: float = 5.,
+                 max_long: float = 1.,
+                 max_short: float = -1.,
+                 calendar: str = 'NYSE',
+                 folds: dict = None,
+                 episode_length: int = None,
+                 sampling_span: int = None
+                 ):
+        """
+        Note: we are loosely borrowing the notation of supervised learning
+        where X is the input and Y is the output. While it remains true for X,
+        in this application Y is a time series of prices to be traded.
+
+        Parameters
+        ----------
+        X
+            A pandas.DataFrame where index is time and columns are names of the
+            exogenous variables. Missing values are allowed. The observation
+            space of the environment will have as many variables as the number
+            of columns.
+        Y
+            A pandas.Dataframe where index is time and columns are names of
+            the assets being traded. Value are prices. Missing values are
+            allowed.
+        start
+            The backtest of episodes cannot start earlier than this date.
+        end
+            The backtest of episodes cannot end after this date.
+        transformer
+            A sklearn.preprocessing transformer used to map the input data in
+            a suitable range of deviation. As a shortcut, you can pass 'z-score'
+            to standardise the data or 'yeo-johnson' for a power transform that
+            will reduce the magnitude of outliers. Default is 'yeo-johnson'.
+        transformer_end
+            If a transformer is passed and is not fit, then the transformer
+            will be fit over all available features data unitl transformer_end.
+            If a value is not passed, then the transformer is fitted between
+            over all available data until `end`.
+        clip
+            After having transformed the variables, values larger than this
+            clip value will be truncated in a [-clip, +clip] range. The default
+            clip value is 5.
+        reward
+            The reward function. At present, the only supported reawrd function
+            is 'logreturn'.
+        spread
+            Bid-ask spread of the assets being traded. It's 0.0002 by default,
+            that is 0.02%.
+        margin
+            This is 0.02 by default, that is 2%. If the notional value of a
+            trade over the net liquidation value of the trading account is
+            smaller than the margin, then the trade will not be implemented.
+            This can be useful to reduce transaction costs by filtering out
+            small trades.
+        rate
+            A pandas series with the risk free rate used to calculate yield on
+            idle cash or cost of leverage.
+        markup
+            Broker markup. If a risk free rate is provided, idle cash in the
+            trading account will yield risk_free - markup. Viceversa, if the
+            account is leveraged by borrowing from the broker, the cost of
+            leverage will by risk_free + markup. This is 0.005 (0.5%) by
+            default.
+        fee
+            The broker will charge a fee proportional to the notional traded
+            value. This is 0.0002 (0.02%) by default.
+        steps_delay : int
+            Number of days that it takes to implement trades. This is 1 by
+            default. Note: if zero, then trades are placed in the same instant
+            that information act upon becomes available.
+        window
+            The shape of the observation space will be (window, nr_features).
+            Window is 1 by default. The observation will return the last
+            `window` observation for each feature. Useful when past observation
+            carry useful information.
+        max_long
+            1 (100%) by default. Long a
+            llocation in a given asset larger than
+            max_long will raise an error.
+        max_short
+            -1 (-100%) by default. Short allocation in a given asset smaller
+            than max_short will raise an error.
+        calendar
+            Trading calendar code. Prevents the backtest or interaction with
+            the environment to occur when markets are closed. 'NYSE' by default.
+        folds
+            Used to partition the data in multiple folds.
+        episode_length
+            If not provided, the episode will terminate when the net liquidation
+            value of the assets goes to zero or when market data stops. You
+            can optionally provide a number of interaction with the environment
+            after which the episode will terminate.
+        sampling_span: int
+            This argument is used only if episode_length is passed in
+            TrandingEnv.reset. If specified, the episode start date is sampled
+            using an exponentially decaying probability. sampling_span is the
+            number of recent timesteps that captures ~70% of the likelihood of
+            sampling a start date from such window. Uniform distribution is
+            used by default if this parameter is not provided. It's useful to
+            specify a value if you wish to train reinforcement learning agents
+            that overweight observations from the more recent past.
+
+        Attributes
+        ----------
+        X : pandas.DataFrame
+            Data derived from the input X after having been transformed.
+            The environment will use this data to calculate serve observations.
+        Y : pandas.DataFrame
+            Data derived from the input Y. The environment allows trading
+            these asset prices after applying the bid-ask spread.
+        """
+        if isinstance(start, str):
+            start = pd.to_datetime(start)
+        start = start or Y.first_valid_index()
+        start = max(start, Y.first_valid_index())
+        if isinstance(end, str):
+            end = pd.to_datetime(end)
+        end = end or Y.last_valid_index()
+        end = min(end, Y.last_valid_index())
+        transformer_end = transformer_end or end
+        if rate is None:
+            rate = pd.Series(name='Zero Rate', dtype=float)
+        rate = rate.squeeze().loc[start:end]
+        rate.name = Rate(rate.name)
+        if not rate.between(-1, +1).all():
+            raise ValueError(
+                "Argument `rate` is expressed as a percentage and it "
+                "shouldn't. For example, 1% should be expressed as 0.01."
+            )
+
+        # Transform data.
+        # TODO: Unit test no look-ahead bias in transformer.
+        # TODO: If folds are provided, fit only on the training fold.
+        if isinstance(transformer, TransformerMixin):
+            self.transformer = transformer
+        elif transformer == 'z-score':
+            self.transformer = StandardScaler(transformer)
+        elif transformer == 'yeo-johnson':
+            self.transformer = PowerTransformer(transformer)
+        else:
+            raise ValueError(f"Unsupported transformer: {transformer}")
+        self.transformer.set_output(transform="pandas")
+        try:
+            check_is_fitted(self.transformer)
+        except NotFittedError:
+            # Fit transformer using data before start but not after end
+            # to provide more data to transformer and reduce 0-padding
+            # when forward-filling low frequency data.
+            self.transformer.fit(X.loc[:transformer_end])
+
+        if reward == 'logret':
+            scale = np.log(pd.DataFrame(Y).loc[start:transformer_end]).diff().std().item()
+            reward = LogReturn(scale=float(scale), clip=2.)
+        else:
+            raise NotImplementedError(f'Unsupported reward: {reward}')
+
+        X = self.transformer.transform(X.loc[:end])
+        X.ffill(inplace=True)
+        X.fillna(0., inplace=True)
+        X.clip(-clip, clip, inplace=True)
+
+        # We drop features before the start date to speed-up warming-up
+        # computations. Note if window is 1, then t0_warmup_idx is 0.
+        t0 = X.loc[start:end].first_valid_index()
+        t0_idx = X.index.get_loc(t0)
+        t0_warmup_idx = t0_idx - window + 1
+        assert t0_warmup_idx >= 0
+        X = X.iloc[t0_warmup_idx:]
+
+        # Discard data outside the data range and set contracts.
+        Y = pd.DataFrame(Y).loc[start:end]
+        Y.columns = [Asset(col) for col in Y.columns]
+        assert X.first_valid_index() <= Y.first_valid_index()
+        super().__init__(
+            action_space=BoxPortfolio(Y.columns, max_short, max_long, margin=margin),
+            state=State(X.columns.size, window),
+            reward=reward,
+            transmitter=self._make_transmitter(X, Y, calendar, spread, rate, folds, window),
+            broker_fees=BrokerFees(markup, rate.name, fee),
+            steps_delay=steps_delay,
+            episode_length=episode_length,
+            sampling_span=sampling_span,
+        )
+
+        # Set attributes.
+        self.X = X
+        self.Y = Y
+        self.start = min(self._transmitter.timesteps)
+        self.end = max(self._transmitter.timesteps)
+
+    @staticmethod
+    def _make_timesteps(X: pd.DataFrame, Y: pd.DataFrame, calendar: str):
+        # Drop dates where market is closed.
+        calendar = pandas_market_calendars.get_calendar(calendar)
+        holidays = calendar.holidays().holidays
+        start = max(X.first_valid_index(), Y.first_valid_index())
+        end = min(X.last_valid_index(), Y.last_valid_index())
+        Y = Y.loc[start:end]
+        timesteps = Y.drop([t for t in holidays if t in Y.index]).index
+        return timesteps
+
+    def _make_transmitter(self, X: pd.DataFrame, Y: pd.DataFrame, calendar: str, spread: float = 0., rate = None, folds = None, window = None):
+        # TODO: test market calendar is applied.
+        # TODO: test no past events are not processed - no need to spend computation in warming up if not needee.
+        markov_reset = window == 1
+        warmup = None if markov_reset else timedelta(days=3 + window * 2)
+        timesteps = self._make_timesteps(X, Y, calendar)
+        transmitter = Transmitter(timesteps, folds, markov_reset, warmup)
+        for name in Y.columns:
+            transmitter.add_prices(Y[[name]], spread)
+        events = [EventNewObservation(t, x) for t, x in X.iterrows()]
+        transmitter.add_events(events)
+        transmitter.add_prices(rate.to_frame())
+        return transmitter

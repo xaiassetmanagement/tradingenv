@@ -51,6 +51,7 @@ MOCK_MODULES = [
     'tradingenv.spaces',
     'tradingenv.registry',
     'tradingenv.dashboard',
+    'tradingenv.env',
     'numpy',
     'pandas',
     'pandas.core',
@@ -71,7 +72,11 @@ MOCK_MODULES = [
     'scipy.cluster.hierarchy',
     'scipy.optimize',
     'scipy.special',
+    'scipy.sparse',
+    'scipy.sparse.linalg',
+    'scipy.stats',
     'sklearn.exceptions',
+    'sklearn.preprocessing',
     'tensorflow',
     'tqdm',
 ]
@@ -91,7 +96,8 @@ from tradingenv import __version__, __package__
 # Add any Sphinx extension module _names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc',
+extensions = [
+    'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
@@ -101,8 +107,7 @@ extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.githubpages',
     # One only of the following two to parse numpy docstrings.
     'sphinx.ext.napoleon',  # preferred wrt to 'numpydoc' because built in
-
-              ]
+    ]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['.templates']
@@ -118,7 +123,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = __package__
-copyright = '2019, Federico Fontana'
+copyright = '2023, Federico Fontana'
 author = 'Federico Fontana'
 
 # The version info for the project you're documenting, acts as replacement for

@@ -11,7 +11,7 @@ for line in init_file_lines:
         exec(line.rstrip())
 
 # long_description
-with open(os.path.join(here, "README.rst"), encoding="utf-8") as f:
+with open(os.path.join(here, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
 
 # package_data.
@@ -45,6 +45,7 @@ setuptools.setup(
         "gym==0.21",
         "numpy",
         "pandas",
+        "pandas_market_calendars",
         "plotly",
         "scikit-learn",
         "statsmodels",
