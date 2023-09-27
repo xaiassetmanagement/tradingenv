@@ -30,7 +30,9 @@ dependencies that can be installed with
 pip install tradingenv[extra]
 ```
 
-# Example - Reinforcement Learning - Lazy Initialisation
+# Examples
+
+## Reinforcement Learning - Lazy Initialisation
 
 The package is built upon the industry-standard
 [gym](https://github.com/openai/gym) and therefore can be used in
@@ -60,7 +62,7 @@ while not done:
     obs, reward, done, info = env.step(action)
 ```
 
-# Example - Reinforcement Learning - Custom Initialisation
+## Reinforcement Learning - Custom Initialisation
 Use custom initialisation to personalise the design of the environment, 
 including the reward function, transaction costs, observation window and leverage.
 
@@ -88,7 +90,7 @@ env = TradingEnvXY(
 )
 ```
 
-# Example - Backtesting
+## Backtesting
 
 Thanks to the event-driven design, tradingenv is agnostic with respect
 to the type and time-frequency of the events. This means that you can
