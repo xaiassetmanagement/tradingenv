@@ -7,6 +7,7 @@ from collections import deque
 import tradingenv
 import numpy as np
 import functools
+import math
 import copy
 import gym
 
@@ -168,7 +169,8 @@ class State(IState):
             self,
             features: Union[int, Sequence[str]],
             window: int = 1,
-            max_: float = 10.
+            stride: int = None,
+            max_: float = 5.,
     ):
         """
         Parameters
@@ -196,9 +198,11 @@ class State(IState):
         else:
             n = len(features)
             self.names = list(features)
-        self.space = gym.spaces.Box(-max_, max_, (window, n), float)
+        m = window if stride is None else math.ceil(window / stride)
+        self.space = gym.spaces.Box(-max_, max_, (m, n), float)
         self.queue = deque(maxlen=window)
         self.last_event = None
+        self.stride = stride
         super().__init__()
 
     def process_EventNewObservation(self, event: EventNewObservation):
@@ -210,7 +214,12 @@ class State(IState):
 
     def parse(self) -> np.array:
         """Returns a numpy array of shape (window, n_features)."""
-        return np.concatenate(self.queue)
+        x = np.concatenate(self.queue)
+        if self.stride:
+            # Select a row each self.skip_frames starting from the end.
+            # [::-1] flips back down sampled array.
+            x = x[::-self.stride][::-1]
+        return x
 
     def flatten(self) -> dict:
         """Flatten the history of past states. Can be useful to parse complex

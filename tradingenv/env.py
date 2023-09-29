@@ -524,6 +524,7 @@ class TradingEnvXY(TradingEnv):
                  latency: float = 0,
                  steps_delay: int = 1,
                  window: int = 1,
+                 stride: int = None,
                  clip: float = 5.,
                  max_long: float = 1.,
                  max_short: float = -1.,
@@ -610,6 +611,11 @@ class TradingEnvXY(TradingEnv):
             Window is 1 by default. The observation will return the last
             `window` observation for each feature. Useful when past observation
             carry useful information.
+        stride
+            When the window size is greater than 1, the stride parameter is
+            used to reduce the dimensionality of the observation. It determines
+            the spacing between consecutive rows selected from the most recent
+            time.
         max_long
             1 (100%) by default. Long a
             llocation in a given asset larger than
@@ -710,7 +716,7 @@ class TradingEnvXY(TradingEnv):
         assert X.first_valid_index() <= Y.first_valid_index()
         super().__init__(
             action_space=BoxPortfolio(Y.columns, max_short, max_long, margin=margin),
-            state=State(X.columns.size, window),
+            state=State(X.columns.size, window, stride, max_=5),
             reward=reward,
             transmitter=self._make_transmitter(X, Y, calendar, spread, rate, folds, window),
             broker_fees=BrokerFees(markup, rate.name, fee, fixed),
