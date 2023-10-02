@@ -503,8 +503,8 @@ class TradingEnv(gym.Env):
 
 
 class TradingEnvXY(TradingEnv):
-    """High-level wrapper of TradingEnv that allows to pass features (X) and
-    prices for assets to be traded (Y) as pandas.DataFrame."""
+    """High-level wrapper of TradingEnv that allows to pass features in tabular
+    form (X) and prices for assets to be traded (Y) as pandas.DataFrame."""
 
     def __init__(self,
                  X: pd.DataFrame,
