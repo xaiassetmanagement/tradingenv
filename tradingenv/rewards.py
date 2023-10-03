@@ -54,7 +54,7 @@ class RewardLogReturn(AbstractReward):
 
 
 class LogReturn(AbstractReward):
-    def __init__(self, scale: float = 1., clip: float = 2.):
+    def __init__(self, scale: float = 1., clip: float = 2., risk_aversion: float = 0.):
         """
         Parameters
         ----------
@@ -63,6 +63,11 @@ class LogReturn(AbstractReward):
             helper to rescale the reward closer to a [-1, +1] range.
         clip
             Rewards larger than this clip value are truncated.
+        risk_aversion
+            Negative rewards are multiplied by (1 + risk_aversion). Zero by
+            default. Risk aversion is computed after clipping the reward.
+            Empirically, values around 0.1 seem to work well but optimal
+            values strongly depend on the use case.
 
         Notes
         -----
@@ -75,6 +80,7 @@ class LogReturn(AbstractReward):
         """
         self.scale = scale
         self.clip = clip
+        self.risk_aversion = risk_aversion
 
     def calculate(self, env: "tradingenv.env.TradingEnv") -> float:
         nlv_last_rebalancing = env.broker.track_record[-1].context_pre.nlv
@@ -82,6 +88,8 @@ class LogReturn(AbstractReward):
         ret = np.log(nlv_now / nlv_last_rebalancing)
         ret /= self.scale
         ret = np.clip(ret, -self.clip, +self.clip)
+        if ret < 0:
+            ret *= (1 + self.risk_aversion)
         return float(ret)
 
 

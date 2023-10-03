@@ -11,6 +11,7 @@ from statsmodels.api import OLS
 from statsmodels.regression.linear_model import RegressionResultsWrapper
 from numbers import Number
 import scipy.cluster.hierarchy as cluster
+import calendar
 
 BDAYS = 252
 
@@ -628,6 +629,32 @@ class PandasMetrics(NDFrame):
     def _intersect_index(self, other: NDFrame):
         idx = self.index.intersection(other.index)
         return other.loc[idx]
+
+    @to_pandas
+    def returns_by_month(self) -> pd.DataFrame:
+        """Returns a DataFrame with monthly returns by year and month.
+
+        Examples
+        -------
+        >>> import tradingenv
+        >>> import pandas as pd
+        >>> series = pd.Series(index=pd.date_range('2019-01-01', periods=252*3.5), dtype=float)
+        >>> prices = series.make_series_from_cagr(0.01).to_frame()
+        >>> returns_by_month = prices.returns_by_month()
+        """
+        level = self.level()
+        df = level.squeeze().resample('M').last().pct_change()
+        df.index = pd.MultiIndex.from_tuples(
+            zip(df.index.strftime('%Y'), df.index.strftime('%b')),
+            names=['Year', 'Month']
+        )
+        df = df.unstack()
+        df.dropna(how='all', axis=0, inplace=True)
+        df.dropna(how='all', axis=1, inplace=True)
+        months = [m for m in calendar.month_abbr if m in df.columns]
+        df = df[months]
+        df['Year'] = (1 + df.fillna(0)).cumprod(1).iloc[:, -1] - 1
+        return df
 
     @to_pandas
     def tearsheet(

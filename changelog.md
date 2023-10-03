@@ -1,8 +1,26 @@
 # Release Notes
 
+
+## [tradingenv 0.1.2] - 2023-10-03
+
+
+### Added
+
+- Added `pandas.DataFrame.returns_by_month` to compute monthly returns.
+- Added optional arguments risk_version and reward_clipping to 
+  `tradingenv.env.TradingEnvXY`.
+
+
+### Fixed
+
+- README file was not being shown correctly in the PyPI page due to an error 
+in pyproject.toml.
+
+<!---
+-->
+
 ## [tradingenv 0.1.1] - 2023-10-02
 
-**Summary**
 
 ### Added
 
@@ -27,16 +45,25 @@
 ### Changed
 
 - Refactored contracts in `tradingenv.contract` module.
-<!---
-### Removed
 
-- Nothing to report.
-
-### Fixed
-
-- Nothing to report.
--->
 
 ## [tradingenv 0.1.0] - 2023-09-13
 
 First release!
+<!---
+### Added
+
+- TODO
+
+### Changed
+
+- TODO
+
+### Removed
+
+- TODO
+
+### Fixed
+
+- TODO
+-->

@@ -526,6 +526,8 @@ class TradingEnvXY(TradingEnv):
                  window: int = 1,
                  stride: int = None,
                  clip: float = 5.,
+                 reward_clipping: float = 2.,
+                 risk_aversion: float = 0.,
                  max_long: float = 1.,
                  max_short: float = -1.,
                  calendar: str = 'NYSE',
@@ -563,10 +565,6 @@ class TradingEnvXY(TradingEnv):
             will be fit over all available features data unitl transformer_end.
             If a value is not passed, then the transformer is fitted between
             over all available data until `end`.
-        clip
-            After having transformed the variables, values larger than this
-            clip value will be truncated in a [-clip, +clip] range. The default
-            clip value is 5.
         reward
             The reward function. At present, the only supported reawrd function
             is 'logreturn'.
@@ -616,6 +614,19 @@ class TradingEnvXY(TradingEnv):
             used to reduce the dimensionality of the observation. It determines
             the spacing between consecutive rows selected from the most recent
             time.
+        clip
+            After having transformed the variables, values larger than this
+            clip value will be truncated in a [-clip, +clip] range. The default
+            clip value is 5.
+        reward_clipping
+            After scaling the reward to N(0, 1), rewards are clipped within
+            the range [-reward_clipping, +reward_clipping]. The default value
+            is 2..
+        risk_aversion
+            Negative rewards are multiplied by (1 + risk_aversion). Zero by
+            default. Risk aversion is computed after clipping the reward.
+            Empirically, values around 0.1 seem to work well but optimal
+            values strongly depend on the use case.
         max_long
             1 (100%) by default. Long a
             llocation in a given asset larger than
@@ -693,7 +704,7 @@ class TradingEnvXY(TradingEnv):
 
         if reward == 'logret':
             scale = np.log(pd.DataFrame(Y).loc[start:transformer_end]).diff().std().mean().item()
-            reward = LogReturn(scale=float(scale), clip=2.)
+            reward = LogReturn(scale=float(scale), clip=reward_clipping, risk_aversion=risk_aversion)
         else:
             raise NotImplementedError(f'Unsupported reward: {reward}')
 
