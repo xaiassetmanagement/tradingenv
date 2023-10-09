@@ -621,7 +621,7 @@ class TradingEnvXY(TradingEnv):
         reward_clipping
             After scaling the reward to N(0, 1), rewards are clipped within
             the range [-reward_clipping, +reward_clipping]. The default value
-            is 2..
+            is 2.
         risk_aversion
             Negative rewards are multiplied by (1 + risk_aversion). Zero by
             default. Risk aversion is computed after clipping the reward.
@@ -703,7 +703,7 @@ class TradingEnvXY(TradingEnv):
             self.transformer.fit(X.loc[:transformer_end])
 
         if reward == 'logret':
-            scale = np.log(pd.DataFrame(Y).loc[start:transformer_end]).diff().std().mean().item()
+            scale = np.log(pd.DataFrame(Y).loc[:transformer_end]).diff().std().mean().item()
             reward = LogReturn(scale=float(scale), clip=reward_clipping, risk_aversion=risk_aversion)
         else:
             raise NotImplementedError(f'Unsupported reward: {reward}')
