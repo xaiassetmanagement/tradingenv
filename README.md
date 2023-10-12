@@ -32,7 +32,7 @@ pip install tradingenv[extra]
 
 # Examples
 
-## Reinforcement Learning - Lazy Initialisation
+## Reinforcement Learning
 
 The package is built upon the industry-standard
 [gym](https://github.com/openai/gym) and therefore can be used in
@@ -51,23 +51,6 @@ Y = data[['SPY', 'TLT']]
 X = Y.rolling(12).mean() - Y.rolling(26).mean()
 
 # Lazy initialization of the trading environment.
-env = TradingEnvXY(X, Y)
-
-# OpenAI/gym protocol. Run an episode in the environment.
-# env can be passed to RL agents of ray/rllib, stable-baselines3 or ElegantRL for training.
-obs = env.reset()
-done = False
-while not done:
-    action = env.action_space.sample()
-    obs, reward, done, info = env.step(action)
-```
-
-## Reinforcement Learning - Custom Initialisation
-Use custom initialisation to personalise the design of the environment, 
-including the reward function, transaction costs, observation window and leverage.
-
-
-``` python
 env = TradingEnvXY(
     X=X,                      # Use moving averages crossover as features
     Y=Y,                      # to trade SPY and TLT ETFs.
@@ -88,6 +71,14 @@ env = TradingEnvXY(
     max_short=-1.,            # the maximum short position is 100% of the portfolio.
     calendar='NYSE',          # Use the NYSE calendar to schedule trading days.
 )
+
+# OpenAI/gym protocol. Run an episode in the environment.
+# env can be passed to RL agents of ray/rllib, stable-baselines3 or ElegantRL for training.
+obs = env.reset()
+done = False
+while not done:
+    action = env.action_space.sample()
+    obs, reward, done, info = env.step(action)
 ```
 
 ## Backtesting
