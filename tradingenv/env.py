@@ -691,6 +691,8 @@ class TradingEnvXY(TradingEnv):
             self.transformer = StandardScaler()
         elif transformer == 'yeo-johnson':
             self.transformer = PowerTransformer(transformer)
+        elif transformer == None:
+            self.transformer = StandardScaler(with_mean=False, with_std=False)
         else:
             raise ValueError(f"Unsupported transformer: {transformer}")
         self.transformer.set_output(transform="pandas")
