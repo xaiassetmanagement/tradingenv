@@ -701,6 +701,13 @@ class TradingEnvXY(TradingEnv):
         else:
             raise NotImplementedError(f'Unsupported reward: {reward}')
 
+        # Reindex X to include timestamps from Y in case there are time gaps in
+        # X which would raise an error when interacting with the env.
+        # The potential side-effect is that here gaps can be arbitrarily wrong
+        # so the code will not raise any exception if data quality (gaps) of X
+        # are really bad. Could be improved by checking that gaps are within a
+        # limit, This responsibility is left to the user for now.
+        X = X.reindex(X.index.union(Y.index), fill_value=np.nan)
         X = self.transformer.transform(X.loc[:end])
         X.ffill(inplace=True)
         X.fillna(0., inplace=True)
