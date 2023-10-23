@@ -672,15 +672,6 @@ class TradingEnvXY(TradingEnv):
         end = end or Y.last_valid_index()
         end = min(end, Y.last_valid_index())
         transformer_end = transformer_end or end
-        if rate is None:
-            rate = pd.Series(name='Zero Rate', dtype=float)
-        rate = rate.squeeze().loc[start:end]
-        rate.name = Rate(rate.name)
-        if not rate.between(-1, +1).all():
-            raise ValueError(
-                "Argument `rate` is expressed as a percentage and it "
-                "shouldn't. For example, 1% should be expressed as 0.01."
-            )
 
         # Transform data.
         # TODO: Unit test no look-ahead bias in transformer.
@@ -720,6 +711,19 @@ class TradingEnvXY(TradingEnv):
         t0 = X.loc[start:end].first_valid_index()
         t0_idx = X.index.get_loc(t0)
         t0_warmup_idx = t0_idx - window + 1
+        if t0_warmup_idx >= 0:
+            # That's fine, there is enough X data to warm-up a first
+            # observation even in presence of window > 1.
+            pass
+        else:
+            # There isn't enough X data. We need to postpone the start date
+            # until when there is enough X data to return the first observation.
+            # This can occur when window > 1 and the first valid index of X and
+            # Y are the same,
+            start = Y.loc[start:end].iloc[abs(t0_warmup_idx):].first_valid_index()
+            t0 = X.loc[start:end].first_valid_index()
+            t0_idx = X.index.get_loc(t0)
+            t0_warmup_idx = t0_idx - window + 1
         assert t0_warmup_idx >= 0
         X = X.iloc[t0_warmup_idx:]
 
@@ -727,6 +731,17 @@ class TradingEnvXY(TradingEnv):
         Y = pd.DataFrame(Y).loc[start:end]
         Y.columns = [Asset(col) for col in Y.columns]
         assert X.first_valid_index() <= Y.first_valid_index()
+
+        if rate is None:
+            rate = pd.Series(name='Zero Rate', dtype=float)
+        rate = rate.squeeze().loc[start:end]
+        rate.name = Rate(rate.name)
+        if not rate.between(-1, +1).all():
+            raise ValueError(
+                "Argument `rate` is expressed as a percentage and it "
+                "shouldn't. For example, 1% should be expressed as 0.01."
+            )
+
         super().__init__(
             action_space=BoxPortfolio(Y.columns, max_short, max_long, margin=margin),
             state=State(X.columns.size, window, stride, max_=5),
@@ -747,7 +762,7 @@ class TradingEnvXY(TradingEnv):
         self.end = max(self._transmitter.timesteps)
 
     @staticmethod
-    def _make_timesteps(X: pd.DataFrame, Y: pd.DataFrame, calendar: str):
+    def _make_timesteps(X: pd.DataFrame, Y: pd.DataFrame, calendar: str, window: int):
         # Drop dates where market is closed.
         calendar = pandas_market_calendars.get_calendar(calendar)
         holidays = calendar.holidays().holidays
@@ -755,6 +770,7 @@ class TradingEnvXY(TradingEnv):
         end = min(X.last_valid_index(), Y.last_valid_index())
         Y = Y.loc[start:end]
         timesteps = Y.drop([t for t in holidays if t in Y.index]).index
+        timesteps = timesteps[window:]
         return timesteps
 
     def _make_transmitter(self, X: pd.DataFrame, Y: pd.DataFrame, calendar: str, spread: float = 0., rate = None, folds = None, window = None):
@@ -762,7 +778,7 @@ class TradingEnvXY(TradingEnv):
         # TODO: test no past events are not processed - no need to spend computation in warming up if not needee.
         markov_reset = window == 1
         warmup = None if markov_reset else timedelta(days=3 + window * 2)
-        timesteps = self._make_timesteps(X, Y, calendar)
+        timesteps = self._make_timesteps(X, Y, calendar, window)
         transmitter = Transmitter(timesteps, folds, markov_reset, warmup)
         for name in Y.columns:
             transmitter.add_prices(Y[[name]], spread)

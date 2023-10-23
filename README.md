@@ -37,8 +37,8 @@ pip install tradingenv[extra]
 The package is built upon the industry-standard
 [gym](https://github.com/openai/gym) and therefore can be used in
 conjunction with popular reinforcement learning frameworks including
-[rllib](https://docs.ray.io/en/latest/rllib/) and
-[stable-baselines3](https://github.com/hill-a/stable-baselines).
+[rllib](https://docs.ray.io/en/latest/rllib/), 
+[stable-baselines3](https://github.com/hill-a/stable-baselines) and [ElegantRL](https://github.com/AI4Finance-Foundation/ElegantRL).
 
 ``` python
 from tradingenv.env import TradingEnvXY
@@ -50,7 +50,7 @@ data = tickers.history(period="12mo", progress=False)['Close'].tz_localize(None)
 Y = data[['SPY', 'TLT']]
 X = Y.rolling(12).mean() - Y.rolling(26).mean()
 
-# Lazy initialization of the trading environment.
+# Instance the trading environment.
 env = TradingEnvXY(
     X=X,                      # Use moving averages crossover as features
     Y=Y,                      # to trade SPY and TLT ETFs.
@@ -73,7 +73,6 @@ env = TradingEnvXY(
 )
 
 # OpenAI/gym protocol. Run an episode in the environment.
-# env can be passed to RL agents of ray/rllib, stable-baselines3 or ElegantRL for training.
 obs = env.reset()
 done = False
 while not done:

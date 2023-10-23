@@ -914,3 +914,10 @@ class TestTradingEnvXY:
         X, y = self._make_dataset()
         env = TradingEnvXY(X, y)
         track_record = env.backtest()
+
+    def test_start_date_corner_case_with_sequence_length(self):
+        """Test that the start date is not too early when sequence_length is
+        specified."""
+        X, y = self._make_dataset()
+        env = TradingEnvXY(X, y, window=10)
+        env.reset()

@@ -1,6 +1,33 @@
 # Release Notes
 
 
+<!---
+## [tradingenv x.y.z] - 2023-09-13
+
+First release!
+
+### Added
+
+- `transformer` parameter of `tradingenv.env.TradingEnvXY` can now be set to 
+`None` in order to prevent any transformation of the input X data.
+
+### Changed
+
+- TODO
+
+### Removed
+
+- TODO
+
+### Fixed
+
+- Fixed bug in `tradingenv.env.TradingEnvXY` that was causing an exception 
+to be raised due to `start` not being dynamically inferred from X and Y data 
+correctly when `window` was set to a value greater than 1.
+- Rewards scaling was failing for out-of-sample data.
+-->
+
+
 ## [tradingenv 0.1.2] - 2023-10-03
 
 
@@ -16,8 +43,6 @@
 - README file was not being shown correctly in the PyPI page due to an error 
 in pyproject.toml.
 
-<!---
--->
 
 ## [tradingenv 0.1.1] - 2023-10-02
 
