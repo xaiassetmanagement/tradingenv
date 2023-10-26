@@ -13,7 +13,10 @@ First release!
 
 ### Changed
 
-- TODO
+- In `tradingenv.env.TradingEnvXY`, data `X` is re-indexed to include 
+timesteps from `Y`. This is done in order to avoid errors on missing data when 
+there are gaps in `X`. It's users' responsibility to ensure that `X` does not 
+have excessively gaps in the data.
 
 ### Removed
 
