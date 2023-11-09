@@ -770,6 +770,8 @@ class TradingEnvXY(TradingEnv):
 
     @staticmethod
     def _make_timesteps(X: pd.DataFrame, Y: pd.DataFrame, calendar: str, window: int):
+        """Returns trading timesteps for the Trasnmitter, inferring timestamps
+        from X and Y data and a given trading calendar."""
         # Drop dates where market is closed.
         calendar = pandas_market_calendars.get_calendar(calendar)
         holidays = calendar.holidays().holidays
@@ -781,6 +783,7 @@ class TradingEnvXY(TradingEnv):
         return timesteps
 
     def _make_transmitter(self, X: pd.DataFrame, Y: pd.DataFrame, calendar: str, spread: float = 0., rate = None, folds = None, window = None):
+        """Returns a Transmitter class storing X and Y information."""
         # TODO: test market calendar is applied.
         # TODO: test no past events are not processed - no need to spend computation in warming up if not needee.
         markov_reset = window == 1
