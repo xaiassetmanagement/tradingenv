@@ -1,4 +1,4 @@
-"""The core module of trading-gym. TradingEnv is your market simulator to run
+"""The core module of tradingenv. TradingEnv is your market simulator to run
 backtests or train reinforcement learning agents."""
 from tradingenv.spaces import PortfolioSpace, BoxPortfolio
 from tradingenv.broker.broker import Broker, EndOfEpisodeError
