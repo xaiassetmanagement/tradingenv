@@ -1,7 +1,7 @@
 import pytest
 from tradingenv.features import Feature
 from tradingenv.events import Observer
-import gym.spaces
+import gymnasium.spaces
 from datetime import datetime
 from tradingenv.events import IEvent
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
@@ -37,7 +37,7 @@ class TestAbstractFeature:
         assert feature.save is False
 
     def test_init_space(self):
-        space = gym.spaces.Box(-100, +100, (1, ))
+        space = gymnasium.spaces.Box(-100, +100, (1, ))
         feature = Feature(space)
         assert feature.space is space
 
@@ -50,7 +50,7 @@ class TestAbstractFeature:
             def parse(self):
                 return 1
 
-        space = gym.spaces.Discrete(2)
+        space = gymnasium.spaces.Discrete(2)
         feature = F(space)
         assert feature() == 1
 
@@ -59,7 +59,7 @@ class TestAbstractFeature:
             def parse(self):
                 return 5
 
-        space = gym.spaces.Discrete(2)
+        space = gymnasium.spaces.Discrete(2)
         feature = F(space)
         with pytest.raises(ValueError):
             feature(verify=True)
@@ -74,7 +74,7 @@ class TestAbstractFeature:
             def parse(self):
                 return 5
 
-        space = gym.spaces.Discrete(2)
+        space = gymnasium.spaces.Discrete(2)
         feature = F(space)
         # with pytest.raises(ValueError):
         feature()
@@ -84,7 +84,7 @@ class TestAbstractFeature:
             def parse(self):
                 return 5
 
-        space = gym.spaces.Discrete(2)
+        space = gymnasium.spaces.Discrete(2)
         feature = F(space)
         feature(verify=False)
 
@@ -93,7 +93,7 @@ class TestAbstractFeature:
             def parse(self):
                 return 5
 
-        space = gym.spaces.Discrete(2)
+        space = gymnasium.spaces.Discrete(2)
         feature = F(space)
         with pytest.raises(ValueError):
             feature(verify=True)
@@ -109,7 +109,7 @@ class TestAbstractFeature:
                 self.transformer.data_range_ = 1.
 
         f = F(
-            space=gym.spaces.Box(-1., 1., (1, 2), float),
+            space=gymnasium.spaces.Box(-1., 1., (1, 2), float),
             transformer=MinMaxScaler(),
         )
         f.fit_transformer()
@@ -132,7 +132,7 @@ class TestAbstractFeature:
         )
     )
     def test_parse_history(self, shape, expected_shape):
-        feature = Feature(space=gym.spaces.Box(-1., +1., shape, float))
+        feature = Feature(space=gymnasium.spaces.Box(-1., +1., shape, float))
         nr_obs = 10
         for t in pd.date_range('2022-01-01', freq='B', periods=nr_obs):
             feature._save_observation(feature.space.sample())
@@ -143,7 +143,7 @@ class TestAbstractFeature:
 
     def test_fit_transformer_box_raises_if_no_history(self):
         f = Feature(
-            space=gym.spaces.Box(-1., 1., (1, 2), float),
+            space=gymnasium.spaces.Box(-1., 1., (1, 2), float),
             transformer=MinMaxScaler(),
         )
         with pytest.raises(ValueError):
@@ -151,7 +151,7 @@ class TestAbstractFeature:
 
     def test_fit_transformer_without_history(self):
         f = Feature(
-            space=gym.spaces.MultiDiscrete([2, 3]),
+            space=gymnasium.spaces.MultiDiscrete([2, 3]),
             transformer=MinMaxScaler(),
         )
         with pytest.raises(NotImplementedError):
@@ -159,7 +159,7 @@ class TestAbstractFeature:
 
     def test_fit_transformer_with_unsupported_space_raises(self):
         f = Feature(
-            space=gym.spaces.MultiDiscrete([2, 3]),
+            space=gymnasium.spaces.MultiDiscrete([2, 3]),
             transformer=MinMaxScaler(),
         )
         obs = np.array([1, 1])

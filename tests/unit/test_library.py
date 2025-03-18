@@ -3,7 +3,7 @@
 - .parse
 - .fit_transform
 """
-import gym.spaces
+import gymnasium.spaces
 
 from tradingenv.events import EventNBBO
 from tradingenv.library import FeaturePortfolioWeight, FeaturePrices, FeatureSpread, FeatureIsRTH
@@ -283,7 +283,7 @@ class TestFeatureSpread:
 class TestFeatureIsRTH:
     def test_init(self):
         feature = FeatureIsRTH()
-        assert isinstance(feature.space, gym.spaces.MultiBinary)
+        assert isinstance(feature.space, gymnasium.spaces.MultiBinary)
 
     @pytest.mark.parametrize('t,expected', [
         (datetime(2022, 1, 1, 13), 0),  # Saturday

@@ -4,7 +4,7 @@ PortfolioSpace._make_rebalancing_request. See examples below."""
 import tradingenv
 from tradingenv.broker.rebalancing import Rebalancing
 from tradingenv.contracts import AbstractContract, Cash
-from gym.spaces import Space, Discrete, Box
+from gymnasium.spaces import Space, Discrete, Box
 from typing import Sequence, Union
 from datetime import datetime
 import numpy as np
@@ -12,7 +12,7 @@ import random
 
 
 class Set(Space):
-    """Similar to gym.spaces.Discrete. However, Set is more flexible because
+    """Similar to gymnasium.spaces.Discrete. However, Set is more flexible because
     it allows to define a set of arbitrary values instead of counting from
     zero."""
 
@@ -46,7 +46,7 @@ class Set(Space):
 
 
 class Float(Space):
-    """Similar to gym.spaces.Box. However, Set is more flexible because
+    """Similar to gymnasium.spaces.Box. However, Set is more flexible because
     it allows to define a set of arbitrary values instead of counting from
     zero."""
 
@@ -118,7 +118,7 @@ class PortfolioSpace(Space):
         Space.__init__(self)
         if not isinstance(self, Space):
             raise TypeError(
-                "{} must be subclassed along with gym.spaces.Space or one "
+                "{} must be subclassed along with gymnasium.spaces.Space or one "
                 "of its subclasses.".format(self.__class__.__name__)
             )
         if not all(isinstance(c, AbstractContract) for c in contracts):

@@ -318,7 +318,7 @@ class TestFuture:
 
             @classmethod
             def freq(cls) -> str:
-                return "Q-DEC"
+                return "QE-DEC"
 
             def _get_expiry_date(self, year: int, month: int) -> datetime:
                 return datetime(2019, 9, 17)
@@ -336,7 +336,7 @@ class TestFuture:
 
             @classmethod
             def freq(cls) -> str:
-                return "Q-DEC"
+                return "QE-DEC"
 
             def _get_expiry_date(self, year: int, month: int) -> datetime:
                 return datetime(2019, 9, 15)
@@ -448,7 +448,7 @@ class TestFutureChain:
         class ES(Future):
             multiplier = 50.0
             margin_requirement = 0.1
-            freq = "Q-DEC"
+            freq = "QE-DEC"
 
             def _get_expiry_date(self, year: int, month: int) -> datetime:
                 return datetime(year, month, 18)

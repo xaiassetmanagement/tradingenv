@@ -11,7 +11,7 @@ from tradingenv.features import Feature
 from tradingenv.contracts import AbstractContract
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from typing import Union, Sequence
-import gym.spaces
+import gymnasium.spaces
 import numpy as np
 import exchange_calendars as xcals
 
@@ -55,7 +55,7 @@ class FeaturePortfolioWeight(Feature):
 
         Notes
         -----
-        Because gym.spaces.Box forces the same low and high bounds on all
+        Because gymnasium.spaces.Box forces the same low and high bounds on all
         items, you'll have to instance a different PortfolioWeight for each
         contract with different 'low' and 'high' allocation.
         """
@@ -65,7 +65,7 @@ class FeaturePortfolioWeight(Feature):
         self.total = total
         self._size = 1 if total else len(self.contracts)
         super().__init__(
-            space=gym.spaces.Box(low, high, (1, self._size), float),
+            space=gymnasium.spaces.Box(low, high, (1, self._size), float),
             name=name,
             transformer=transformer,
         )
@@ -111,7 +111,7 @@ class FeaturePrices(Feature):
             transformer = StandardScaler()
         self.contracts = listify(contracts)
         super().__init__(
-            space=gym.spaces.Box(low, high, (1, len(self.contracts)), float),
+            space=gymnasium.spaces.Box(low, high, (1, len(self.contracts)), float),
             name=name,
             transformer=transformer,
         )
@@ -157,7 +157,7 @@ class FeatureSpread(Feature):
         self._high = clip
         self._size = size or len(self.contracts)
         super().__init__(
-            space=gym.spaces.Box(self._low, self._high, (1, self._size), float),
+            space=gymnasium.spaces.Box(self._low, self._high, (1, self._size), float),
             name=name,
             transformer=transformer,
         )
@@ -214,9 +214,9 @@ class FeatureIsRTH(Feature):
             transformer = _NullTransformer()
             self._tz = tz
         if kind == 'binary':
-            space = gym.spaces.MultiBinary(1)
+            space = gymnasium.spaces.MultiBinary(1)
         else:
-            space = gym.spaces.Box(0., 1., (1, 1), float)
+            space = gymnasium.spaces.Box(0., 1., (1, 1), float)
         self.calendar = xcals.get_calendar(calendar, side='neither')
         self.kind = kind
         super().__init__(space=space, name=name, transformer=transformer)

@@ -10,7 +10,7 @@ from tradingenv.events import EventNBBO
 from pandas.api.types import is_numeric_dtype
 from datetime import datetime
 from time import strptime
-import gym.spaces
+import gymnasium.spaces
 import numpy as np
 import pandas as pd
 import os
@@ -33,7 +33,7 @@ class TargetDiscretePortfolio(IState):
     """Feature whose state indicate the current target weights of the
     portfolio."""
     def __init__(self):
-        self.space = gym.spaces.Box(low=0, high=1, shape=(3,), dtype=np.float64)
+        self.space = gymnasium.spaces.Box(low=0, high=1, shape=(3,), dtype=np.float64)
         self.value = [0, 0, 0]
 
     def process_EventReset(self, event: "EventReset"):

@@ -1,5 +1,5 @@
-import gym
-import gym.utils.seeding
+import gymnasium
+import gymnasium.utils.seeding
 from tradingenv.env import TradingEnv, TradingEnvXY
 from tradingenv.events import IEvent, EventReset, EventNBBO, EventDone
 from tradingenv.transmitter import Transmitter, AsynchronousTransmitter
@@ -39,14 +39,14 @@ class TestTradingEnvETF:
         return env
 
     def test_is_subclass_of_gym_env(self):
-        assert issubclass(TradingEnv, gym.Env)
+        assert issubclass(TradingEnv, gymnasium.Env)
 
     # def test_render_modes_are_specified(self):
     #     assert len(TradingEnv.metadata["render.modes"]) > 0
 
     def test_initialization_sets_inputs(self):
         class MockFeature(IState):
-            space = gym.spaces.Box(-np.inf, +np.inf, (1,), np.float32)
+            space = gymnasium.spaces.Box(-np.inf, +np.inf, (1,), np.float32)
 
             def process_Event(self, event: IEvent):
                 return 0.0
@@ -133,7 +133,7 @@ class TestTradingEnvETF:
 
     def test_add_event_raises_to_main_thread(self):
         class FeatureNewsSentiment(IState):
-            space = gym.spaces.Box(-np.inf, +np.inf, (1,), np.float64)
+            space = gymnasium.spaces.Box(-np.inf, +np.inf, (1,), np.float64)
 
             def parse(self):
                 return np.array([1.])
@@ -369,7 +369,7 @@ class TestTradingEnvETF:
 
     def test_default_state_type_if_verbosedict(self):
         class FeatureNewsSentiment(IState):
-            observation_space = gym.spaces.Box(-np.inf, +np.inf, (1,), np.float32)
+            observation_space = gymnasium.spaces.Box(-np.inf, +np.inf, (1,), np.float32)
 
             def __init__(self):
                 self.item = 0
@@ -448,7 +448,7 @@ class TestTradingEnvETF:
 
     def test_error_is_raised_when_bug_in_Feature(self):
         class BuggedFeature(IState):
-            space = gym.spaces.Box(-np.inf, +np.inf, (1,), np.float64)
+            space = gymnasium.spaces.Box(-np.inf, +np.inf, (1,), np.float64)
 
             def __init__(self):
                 self.item = 0
@@ -574,7 +574,7 @@ class TestTradingEnvETF:
                 self.news = news
 
         class FeatureNewsSentiment(IState):
-            space = gym.spaces.Box(-np.inf, +np.inf, (2,), np.float64)
+            space = gymnasium.spaces.Box(-np.inf, +np.inf, (2,), np.float64)
 
             def __init__(self):
                 self.score = 0.

@@ -296,7 +296,7 @@ class Future(AbstractContract):
     @property
     @abstractmethod
     def freq(self) -> str:
-        """Returns frequency of the contracts, e.g. Q-DEC for ES, M for VX."""
+        """Returns frequency of the contracts, e.g. QE-DEC for ES, M for VX."""
 
     @property
     @abstractmethod
@@ -471,7 +471,7 @@ class ES(Future):
     https://www.tradingacademy.com/lessons/article/futures-contract-rollover
     """
     exists_since = datetime(1997, 9, 7)  # see reference [1]
-    freq = "Q-DEC"
+    freq = "QE-DEC"
     multiplier = 50.0
 
     def _get_expiry_date(self, year: int, month: int) -> datetime:
@@ -559,7 +559,7 @@ class _Treasury(Future):
     https://www.barchart.com/futures/quotes/ES*0/profile
     """
     exists_since = datetime(1970, 1, 1)
-    freq = "Q-DEC"
+    freq = "QE-DEC"
 
     def _get_expiry_date(self, year: int, month: int) -> datetime:
         """Last business day of the delivery month."""
@@ -615,7 +615,7 @@ class NK(Future):
     """
 
     exists_since = datetime(1990, 11, 8)  # see reference [1]
-    freq = "Q-DEC"
+    freq = "QE-DEC"
     multiplier = 5.
 
     def _get_expiry_date(self, year: int, month: int) -> datetime:

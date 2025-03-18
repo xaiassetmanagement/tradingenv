@@ -8,13 +8,13 @@
 """Logic to wrap policy passed in TradingEnv.sample_episode(policy)."""
 from tradingenv.spaces import PortfolioSpace
 from abc import ABC, abstractmethod
-import gym.spaces
+import gymnasium.spaces
 
 
 class AbstractPolicy(ABC):
     # Class attributes are filled by make_policy()
     action_space: PortfolioSpace = None
-    observation_space: gym.Space = None
+    observation_space: gymnasium.Space = None
 
     @abstractmethod
     def act(self, state):

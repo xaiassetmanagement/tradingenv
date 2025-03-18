@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 from tradingenv.features import Feature
 from tradingenv.events import Observer
-import gym.spaces
+import gymnasium.spaces
 from datetime import datetime
 from tradingenv.events import IEvent
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
@@ -25,7 +25,7 @@ class TestFeaturesTransformers:
     def test_reset_preserves_transformer_attributes(self):
         # https://stackoverflow.com/questions/55731933/initialise-standardscaler-from-scaling-parameters
         f = Feature(
-            space=gym.spaces.Box(-100, +100, (1, 2)),
+            space=gymnasium.spaces.Box(-100, +100, (1, 2)),
             transformer=StandardScaler(),
         )
         f.transformer.mean_ = np.array(([[1., 2.]]))
@@ -44,7 +44,7 @@ class TestFeaturesTransformers:
             def __init__(self, contracts):
                 self.contracts = contracts
                 super().__init__(
-                    space=gym.spaces.Box(0., 1., (1, len(self.contracts))),
+                    space=gymnasium.spaces.Box(0., 1., (1, len(self.contracts))),
                     transformer=MinMaxScaler((-1, 1)),
                 )
 
@@ -86,7 +86,7 @@ class TestFeaturesTransformers:
                 return data
 
         feature = MyFeature(
-            space=gym.spaces.Box(-100, +100, (1, 2)),
+            space=gymnasium.spaces.Box(-100, +100, (1, 2)),
             transformer=StandardScaler(),
         )
         feature.reset()

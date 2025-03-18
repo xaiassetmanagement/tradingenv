@@ -4,7 +4,7 @@ from sklearn.exceptions import NotFittedError
 from datetime import datetime
 from typing import Dict, Any
 import numpy as np
-import gym.spaces
+import gymnasium.spaces
 import copy
 
 
@@ -31,7 +31,7 @@ class Feature(Observer):
 
     def __init__(
             self,
-            space: gym.spaces.Space = None,
+            space: gymnasium.spaces.Space = None,
             name: str = None,
             save: bool = True,
             transformer = None,
@@ -163,7 +163,7 @@ class Feature(Observer):
     def _parse_history(self, make_2d: bool = False):
         """Parse history of the feature in a format that can be used to
         fit the transformer."""
-        if issubclass(type(self.space), gym.spaces.Box):
+        if issubclass(type(self.space), gymnasium.spaces.Box):
             # If space shape is (x, y, z, ...), shape of data will
             # be (n, x, y, z, ...).
             if len(self.history) == 0:
@@ -187,7 +187,7 @@ class Feature(Observer):
                 # So we squeeze
                 size_flattened_feature = rows * cols
                 data = data.reshape(n, size_flattened_feature)
-        elif issubclass(type(self.space), gym.spaces.MultiBinary):
+        elif issubclass(type(self.space), gymnasium.spaces.MultiBinary):
             # No need to parse history as there is no need to fit a transformer
             # on dummy variables.
             data = None
@@ -197,7 +197,7 @@ class Feature(Observer):
                 "space: {self.space}. A space must be supported to "
                 "retrieve batch observations to fit. Use a support space "
                 "of implement Feature._manual_fit_transformer."
-                "Supported spaces are: {gym.spaces.Box}."
+                "Supported spaces are: {gymnasium.spaces.Box}."
             )
         return data
 

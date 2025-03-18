@@ -42,7 +42,7 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=["docs", "notebooks", "tests"]),
     install_requires=[
         "exchange_calendars",
-        "gym==0.21",
+        "gymnasium",
         "numpy",
         "pandas",
         "pandas_market_calendars",

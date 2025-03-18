@@ -39,10 +39,10 @@ import pandas_market_calendars
 import pandas as pd
 import numpy as np
 import threading
-import gym
+import gymnasium
 
 
-class TradingEnv(gym.Env):
+class TradingEnv(gymnasium.Env):
     """TradingEnv is the core class of trading-gym, representing a market
     simulator to run backtests or train reinforcement learning agents."""
 

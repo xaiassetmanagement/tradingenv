@@ -1,5 +1,5 @@
 class TestReadme:
-    def test_instancing_env_detailed(self):
+    def get_detailed_env(self):
         from tradingenv import TradingEnv
         from tradingenv.contracts import ETF
         from tradingenv.spaces import BoxPortfolio
@@ -37,8 +37,11 @@ class TestReadme:
             obs, reward, done, info = env.step(action)
         return env, prices
 
+    def test_instancing_env_detailed(self):
+        self.get_detailed_env()
+
     def test_backtest_60_40_old(self):
-        env, prices = self.test_instancing_env_detailed()
+        env, prices = self.get_detailed_env()
         # BEGIN OMIT
         from tradingenv.policy import AbstractPolicy
 
@@ -61,7 +64,7 @@ class TestReadme:
         track_record.fig_net_liquidation_value()
         # END OMIT
 
-    def test_instancing_env_lazy(self):
+    def get_instancing_env_lazy(self):
         # BEGIN OMIT
         from tradingenv.env import TradingEnvXY
         import yfinance
@@ -84,9 +87,12 @@ class TestReadme:
         # END OMIT
         return env, data, X, Y
 
+    def test_instancing_env_lazy(self):
+        self.get_instancing_env_lazy()
+
     def test_instancing_env_custom(self):
         from tradingenv.env import TradingEnvXY
-        env, data, X, Y = self.test_instancing_env_lazy()
+        env, data, X, Y = self.get_instancing_env_lazy()
 
         # BEGIN OMIT
         env = TradingEnvXY(
@@ -110,10 +116,9 @@ class TestReadme:
             calendar='NYSE',          # Use the NYSE calendar to schedule trading days.
         )
         # END OMIT
-        return env, data
 
     def test_backtest_60_40(self):
-        env, data, X, Y = self.test_instancing_env_lazy()
+        env, data, X, Y = self.get_instancing_env_lazy()
 
         # BEGIN OMIT
         from tradingenv.policy import AbstractPolicy

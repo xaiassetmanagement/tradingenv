@@ -3,7 +3,7 @@ from tradingenv.state import IState, cache
 from tradingenv.events import Observer, IEvent
 from datetime import datetime
 import pytest
-import gym
+import gymnasium
 
 
 class EventSentiment(IEvent):
@@ -52,7 +52,7 @@ class TestStateWithoutSpace:
     def test_not_raise_if_space_is_not_none_and_parse_is_not_implemented(self):
         class State(IState):
             def __init__(self):
-                self.space = gym.spaces.Box(low=-1, high=1, shape=(1,), dtype=np.float64)
+                self.space = gymnasium.spaces.Box(low=-1, high=1, shape=(1,), dtype=np.float64)
                 self.sentiment = 0.18
 
             def process_EventSentiment(self, event: EventSentiment):
@@ -70,7 +70,7 @@ class TestStateWithoutSpace:
     def test_raise_if_state_does_not_belong_to_space(self):
         class State(IState):
             def __init__(self):
-                self.space = gym.spaces.Box(low=-1, high=1, shape=(1,))
+                self.space = gymnasium.spaces.Box(low=-1, high=1, shape=(1,))
                 self.sentiment = 2.  # greater than 1. will throw an exception
 
             def process_EventSentiment(self, event: EventSentiment):
@@ -86,7 +86,7 @@ class TestStateWithoutSpace:
     def test_not_raise_if_state_does_not_belong_to_space_and_False_verify(self):
         class State(IState):
             def __init__(self):
-                self.space = gym.spaces.Box(low=-1, high=1, shape=(1,))
+                self.space = gymnasium.spaces.Box(low=-1, high=1, shape=(1,))
                 self.sentiment = 2.  # greater than 1. will throw an exception
 
             def process_EventSentiment(self, event: EventSentiment):
@@ -103,7 +103,7 @@ class TestStateHistory:
     def test_history_saved_by_default(self):
         class State(IState):
             def __init__(self):
-                self.space = gym.spaces.Box(low=-1, high=1, shape=(1,), dtype=float)
+                self.space = gymnasium.spaces.Box(low=-1, high=1, shape=(1,), dtype=float)
                 self.sentiment = 0.
 
             def process_EventSentiment(self, event: EventSentiment):
@@ -119,12 +119,12 @@ class TestStateHistory:
 
     @pytest.mark.skip(reason='Nothing bad happens if you dont implement parse')
     def test_parse_must_be_implemented_if_space_is_provided(self):
-        """OpenAI-gym compatibility will fail if you don't implement parse,
-        but an error will be raised probably when gym will check if state
+        """OpenAI-gymnasium compatibility will fail if you don't implement parse,
+        but an error will be raised probably when gymnasium will check if state
         belongs to space. We could raise a clearer error message maybe?"""
         class State(IState):
             def __init__(self):
-                self.space = gym.spaces.Box(low=-1, high=1, shape=(1,))
+                self.space = gymnasium.spaces.Box(low=-1, high=1, shape=(1,))
                 self.sentiment = 0.
 
             def process_EventSentiment(self, event: EventSentiment):
@@ -136,12 +136,12 @@ class TestStateHistory:
 
     @pytest.mark.skip(reason='Nothing bad happens if you dont implement parse')
     def test_raise_if_space_is_not_none_and_parse_is_not_implemented(self):
-        """OpenAI-gym compatibility will fail if you don't implement parse,
-        but an error will be raised probably when gym will check if state
+        """OpenAI-gymnasium compatibility will fail if you don't implement parse,
+        but an error will be raised probably when gymnasium will check if state
         belongs to space. We could raise a clearer error message maybe?"""
         class State(IState):
             def __init__(self):
-                self.space = gym.spaces.Box(low=-1, high=1, shape=(1,))
+                self.space = gymnasium.spaces.Box(low=-1, high=1, shape=(1,))
                 self.sentiment = 0.18
 
             def process_EventSentiment(self, event: EventSentiment):
@@ -167,7 +167,7 @@ class TestStateHistory:
     def test_save_with_space(self):
         class State(IState):
             def __init__(self):
-                self.space = gym.spaces.Box(low=-1, high=1, shape=(1,), dtype=float)
+                self.space = gymnasium.spaces.Box(low=-1, high=1, shape=(1,), dtype=float)
                 self.sentiment = 0.
 
             def process_EventSentiment(self, event: EventSentiment):

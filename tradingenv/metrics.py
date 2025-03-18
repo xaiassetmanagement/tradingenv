@@ -201,10 +201,12 @@ class PandasMetrics(NDFrame):
         S&P 500    0.5
         dtype: float64
         >>> prices.squeeze().cagr()
-        0.5
+        np.float64(0.5)
         """
         level = self.level().bfill()
-        return (level.iloc[-1] / level.iloc[0]) ** (1 / self.nr_years()) - 1
+        years = self.nr_years()
+        cagr = (level.iloc[-1] / level.iloc[0]) ** (1 / years) - 1
+        return cagr
 
     @to_pandas
     def cumulative_return(self):
@@ -251,7 +253,7 @@ class PandasMetrics(NDFrame):
         S&P 500    0.092578
         dtype: float64
         >>> prices.squeeze().volatility()
-        0.09257831...
+        np.float64(0.092578...)
         """
         return np.sqrt(BDAYS) * self.simple_returns().std()
 
@@ -396,7 +398,7 @@ class PandasMetrics(NDFrame):
         ...     index=pd.date_range(start='2019-01-01', periods=8, freq='B'),
         ... )
         >>> prices['S&P 500'].tracking_error(prices['SPY'])
-        0.01536269...
+        np.float64(0.01536269...)
         """
         excess_returns = self.excess_returns(other)
         return np.sqrt(BDAYS) * excess_returns.std()
@@ -485,7 +487,7 @@ class PandasMetrics(NDFrame):
         ...     columns=['S&P 500', 'RiskFreeRate'],
         ... )
         >>> prices['S&P 500'].sharpe_ratio(risk_free=prices['RiskFreeRate'])
-        8.31680812940463
+        np.float64(8.31680812940463)
         """
         return self.excess_cagr(risk_free) / self.volatility()
 
@@ -503,12 +505,12 @@ class PandasMetrics(NDFrame):
         ...     columns=['S&P 500', 'RiskFreeRate'],
         ... )
         >>> prices['S&P 500'].sortino_ratio(risk_free=prices['RiskFreeRate'])
-        10.7621879372323
+        np.float64(10.7621879372323)
         >>> risk_free_cagr = prices['RiskFreeRate'].cagr()
         >>> risk_free_cagr
-        0.6800754114925203
+        np.float64(0.6800754114925203)
         >>> prices['S&P 500'].sortino_ratio(risk_free_cagr)
-        10.7621879372323
+        np.float64(10.7621879372323)
         """
         return self.excess_cagr(risk_free) / self.downside_volatility()
 
@@ -638,12 +640,12 @@ class PandasMetrics(NDFrame):
         -------
         >>> import tradingenv
         >>> import pandas as pd
-        >>> series = pd.Series(index=pd.date_range('2019-01-01', periods=252*3.5), dtype=float)
+        >>> series = pd.Series(index=pd.date_range('2019-01-01', periods=252*3), dtype=float)
         >>> prices = series.make_series_from_cagr(0.01).to_frame()
         >>> returns_by_month = prices.returns_by_month()
         """
         level = self.level()
-        df = level.squeeze().resample('M').last().pct_change()
+        df = level.squeeze().resample('ME').last().pct_change()
         df.index = pd.MultiIndex.from_tuples(
             zip(df.index.strftime('%Y'), df.index.strftime('%b')),
             names=['Year', 'Month']
@@ -862,7 +864,7 @@ class SeriesMetrics(NDFrame):
             "level": self,
             "trendline": ols_results.predict(x),
             "residuals": ols_results.resid,
-            "std": ols_results.resid.std(),
+            "std": float(ols_results.resid.std()),
         }
 
 

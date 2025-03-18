@@ -84,7 +84,7 @@ class TestTrade:
         mocker.patch.object(fees, "commissions")
         now = datetime.now()
         trade = Trade(now, ETF("SPY"), -5.0, 2.0, 4.0, fees)
-        fees.commissions.called_once_with(trade)
+        fees.commissions.assert_called_once_with(trade)
 
     def test_cost_of_commissions(self):
         class Commissions(IBrokerFees):

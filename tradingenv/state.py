@@ -1,6 +1,6 @@
 from tradingenv.events import Observer, EventNewObservation
 from tradingenv.features import Feature
-from gym.spaces import Space
+from gymnasium.spaces import Space
 from datetime import datetime
 from typing import Dict, Any, Sequence, Callable, Union
 from collections import deque
@@ -9,7 +9,7 @@ import numpy as np
 import functools
 import math
 import copy
-import gym
+import gymnasium
 
 
 class IState(Observer):
@@ -68,7 +68,7 @@ class IState(Observer):
                 feature.name: feature.space for feature in self.features
             }
             if all(space is not None for space in mapping.values()):
-                self.space = gym.spaces.Dict(mapping)
+                self.space = gymnasium.spaces.Dict(mapping)
 
     def __call__(self, verify: bool = True):
         """Returns self is self.space is None. Otherwise, an object compatible
@@ -199,7 +199,7 @@ class State(IState):
             n = len(features)
             self.names = list(features)
         m = window if stride is None else math.ceil(window / stride)
-        self.space = gym.spaces.Box(-max_, max_, (m, n), float)
+        self.space = gymnasium.spaces.Box(-max_, max_, (m, n), float)
         self.queue = deque(maxlen=window)
         self.last_event = None
         self.stride = stride

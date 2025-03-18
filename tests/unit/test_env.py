@@ -1,5 +1,5 @@
-import gym
-import gym.utils.seeding
+import gymnasium
+import gymnasium.utils.seeding
 from tradingenv.env import TradingEnv
 from tradingenv.spaces import DiscretePortfolio
 from tradingenv.contracts import Cash, ETF
@@ -25,7 +25,7 @@ class TestTradingEnv:
         return env
 
     def test_is_subclass_of_gym_env(self):
-        assert issubclass(TradingEnv, gym.Env)
+        assert issubclass(TradingEnv, gymnasium.Env)
 
     # def test_render_modes_are_specified(self):
     #     assert len(TradingEnv.metadata["render.modes"]) > 0

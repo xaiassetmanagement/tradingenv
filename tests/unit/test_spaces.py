@@ -10,11 +10,11 @@ from tradingenv.broker.rebalancing import Rebalancing
 from tradingenv.contracts import Cash, ETF, ES
 from tradingenv.contracts import Future, FutureChain
 from tradingenv.contracts import FutureChain, ES
-from gym.spaces import Space, Discrete, Box
+from gymnasium.spaces import Space, Discrete, Box
 from datetime import datetime
 import pytest
 import numpy as np
-import gym
+import gymnasium
 
 
 try:
@@ -26,7 +26,7 @@ except ModuleNotFoundError:
 
 class TestSet:
     def test_parent_is_gym_space(self):
-        assert issubclass(Set, gym.Space)
+        assert issubclass(Set, gymnasium.Space)
 
     def test_initialisation(self):
         space = Set(-1, 1)
@@ -57,7 +57,7 @@ class TestSet:
 
 class TestFloat:
     def test_parent_is_gym_space(self):
-        assert issubclass(Float, gym.Space)
+        assert issubclass(Float, gymnasium.Space)
 
     def test_initialisation(self):
         low = -1
@@ -242,7 +242,7 @@ class TestPortfolioSpace:
 
         class ES(Future):
             multiplier = 50.0
-            freq = "Q-DEC"
+            freq = "QE-DEC"
 
             def _get_expiry_date(self, year: int, month: int) -> datetime:
                 return datetime(year, month, 18)
@@ -358,7 +358,8 @@ class TestDiscretePortfolio:
         contracts = [Cash(), ETF("IEF")]
         allocations = [[1, 0], [0.5, 0.5], [0, 1]]
         space = DiscretePortfolio(contracts, allocations)
-        assert isinstance(space.sample(), int)
+        sample = space.sample()
+        assert isinstance(sample, (int, np.int64))
 
     def test_sample_items_from_space(self):
         contracts = [Cash(), ETF("IEF")]
