@@ -48,11 +48,13 @@ def mock_gym():
 
 
 MOCK_MODULES = [
+    'exchange_calendars',
     'tradingenv.spaces',
     'tradingenv.registry',
     'tradingenv.dashboard',
     'tradingenv.env',
     'numpy',
+    'numpy.typing',
     'pandas',
     'pandas.core',
     'pandas.core.generic',
@@ -60,6 +62,9 @@ MOCK_MODULES = [
     'gym',
     'gym.spaces',
     'gym.spaces.Space',
+    'gymnasium',
+    'gymnasium.spaces',
+    'gymnasium.spaces.Space',
     'plotly',
     'plotly.figure_factory',
     'plotly.graph_objs',

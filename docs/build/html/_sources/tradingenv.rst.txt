@@ -17,101 +17,101 @@ tradingenv.contracts module
 
 .. automodule:: tradingenv.contracts
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 tradingenv.env module
 ---------------------
 
 .. automodule:: tradingenv.env
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 tradingenv.events module
 ------------------------
 
 .. automodule:: tradingenv.events
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 tradingenv.exchange module
 --------------------------
 
 .. automodule:: tradingenv.exchange
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 tradingenv.features module
 --------------------------
 
 .. automodule:: tradingenv.features
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 tradingenv.library module
 -------------------------
 
 .. automodule:: tradingenv.library
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 tradingenv.metrics module
 -------------------------
 
 .. automodule:: tradingenv.metrics
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 tradingenv.policy module
 ------------------------
 
 .. automodule:: tradingenv.policy
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 tradingenv.rewards module
 -------------------------
 
 .. automodule:: tradingenv.rewards
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 tradingenv.spaces module
 ------------------------
 
 .. automodule:: tradingenv.spaces
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 tradingenv.state module
 -----------------------
 
 .. automodule:: tradingenv.state
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 tradingenv.transmitter module
 -----------------------------
 
 .. automodule:: tradingenv.transmitter
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: tradingenv
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

@@ -5,18 +5,20 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>tradingenv.broker.rebalancing &#8212; tradingenv 0.1.1 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b76e3c8a" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=039e1c02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
     <script src="../../../_static/documentation_options.js?v=de76930b"></script>
-    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
    
   <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
   
+
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  
 
   </head><body>
   
@@ -29,21 +31,21 @@
           <div class="body" role="main">
             
   <h1>Source code for tradingenv.broker.rebalancing</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">tradingenv.broker.allocation</span> <span class="kn">import</span> <span class="n">Weights</span><span class="p">,</span> <span class="n">NrContracts</span>
-<span class="kn">import</span> <span class="nn">tradingenv</span>
-<span class="kn">from</span> <span class="nn">tradingenv.contracts</span> <span class="kn">import</span> <span class="n">AbstractContract</span>
-<span class="kn">from</span> <span class="nn">tradingenv.broker.trade</span> <span class="kn">import</span> <span class="n">Trade</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">List</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">tradingenv.broker.allocation</span><span class="w"> </span><span class="kn">import</span> <span class="n">Weights</span><span class="p">,</span> <span class="n">NrContracts</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tradingenv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tradingenv.contracts</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractContract</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tradingenv.broker.trade</span><span class="w"> </span><span class="kn">import</span> <span class="n">Trade</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 
 
 <div class="viewcode-block" id="Rebalancing">
 <a class="viewcode-back" href="../../../tradingenv.broker.html#tradingenv.broker.rebalancing.Rebalancing">[docs]</a>
-<span class="k">class</span> <span class="nc">Rebalancing</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Rebalancing</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Private class returned by PortfolioSpace._make_rebalancing_request and</span>
 <span class="sd">    passed to RebalancingResponse during its initialization.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">contracts</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">AbstractContract</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">allocation</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -122,7 +124,7 @@
 
 <div class="viewcode-block" id="Rebalancing.make_trades">
 <a class="viewcode-back" href="../../../tradingenv.broker.html#tradingenv.broker.rebalancing.Rebalancing.make_trades">[docs]</a>
-    <span class="k">def</span> <span class="nf">make_trades</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">broker</span><span class="p">:</span> <span class="s2">&quot;tradingenv.broker.Broker&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Trade</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">make_trades</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">broker</span><span class="p">:</span> <span class="s2">&quot;tradingenv.broker.Broker&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Trade</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -159,7 +161,7 @@
         <span class="k">return</span> <span class="n">trades</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">(</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">)</span></div>
 
 </pre></div>
@@ -168,7 +170,7 @@
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper"><div class="relations">
 <h3>Related Topics</h3>
 <ul>
@@ -178,7 +180,7 @@
   </ul></li>
 </ul>
 </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
@@ -186,18 +188,18 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
+</search>
 <script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2023, Federico Fontana.
+      &#169;2023, Federico Fontana.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
     </div>
 

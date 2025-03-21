@@ -6,10 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Introduction &#8212; tradingenv 0.1.1 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b76e3c8a" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=039e1c02" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
     <script src="_static/documentation_options.js?v=de76930b"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -17,8 +18,9 @@
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
+
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  
 
   </head><body>
   
@@ -68,53 +70,11 @@ dependencies that can be installed with</p>
 <p>The package is built upon the industry-standard <a class="reference external" href="https://github.com/openai/gym">gym</a> and therefore can be used
 in conjunction with popular reinforcement learning frameworks including <a class="reference external" href="https://docs.ray.io/en/latest/rllib/">rllib</a>
 and <a class="reference external" href="https://github.com/hill-a/stable-baselines">stable-baselines3</a>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tradingenv.env</span> <span class="kn">import</span> <span class="n">TradingEnvXY</span>
-<span class="kn">import</span> <span class="nn">yfinance</span>
-
-<span class="c1"># Load data from Yahoo Finance.</span>
-<span class="n">tickers</span> <span class="o">=</span> <span class="n">yfinance</span><span class="o">.</span><span class="n">Tickers</span><span class="p">([</span><span class="s1">&#39;SPY&#39;</span><span class="p">,</span> <span class="s1">&#39;TLT&#39;</span><span class="p">,</span> <span class="s1">&#39;TBIL&#39;</span><span class="p">,</span> <span class="s1">&#39;^IRX&#39;</span><span class="p">])</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">tickers</span><span class="o">.</span><span class="n">history</span><span class="p">(</span><span class="n">period</span><span class="o">=</span><span class="s2">&quot;12mo&quot;</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="s1">&#39;Close&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tz_localize</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-<span class="n">Y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[[</span><span class="s1">&#39;SPY&#39;</span><span class="p">,</span> <span class="s1">&#39;TLT&#39;</span><span class="p">]]</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">Y</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">-</span> <span class="n">Y</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="mi">26</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-
-<span class="c1"># Default instance of the trading environment.</span>
-<span class="n">env</span> <span class="o">=</span> <span class="n">TradingEnvXY</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
-
-<span class="c1"># Run an episode in the environment.</span>
-<span class="n">obs</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="k">while</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
-    <span class="n">action</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span>
-    <span class="n">obs</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
-</pre></div>
-</div>
 </section>
 <section id="example-reinforcement-learning-custom-initialisation">
 <h1>Example - Reinforcement Learning - Custom Initialisation<a class="headerlink" href="#example-reinforcement-learning-custom-initialisation" title="Link to this heading">¶</a></h1>
 <p>Use custom initialisation to personalise the design of the environment,
 including the reward function, transaction costs, observation window and leverage.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">env</span> <span class="o">=</span> <span class="n">TradingEnvXY</span><span class="p">(</span>
-    <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>                      <span class="c1"># Use moving averages crossover as features</span>
-    <span class="n">Y</span><span class="o">=</span><span class="n">Y</span><span class="p">,</span>                      <span class="c1"># to trade SPY and TLT ETFs.</span>
-    <span class="n">transformer</span><span class="o">=</span><span class="s1">&#39;z-score&#39;</span><span class="p">,</span>    <span class="c1"># Features are standardised to N(0, 1).</span>
-    <span class="n">reward</span><span class="o">=</span><span class="s1">&#39;logret&#39;</span><span class="p">,</span>          <span class="c1"># Reward is the log return of the portfolio at each step,</span>
-    <span class="n">cash</span><span class="o">=</span><span class="mi">1000000</span><span class="p">,</span>             <span class="c1"># starting with $1M.</span>
-    <span class="n">spread</span><span class="o">=</span><span class="mf">0.0002</span><span class="p">,</span>            <span class="c1"># Transaction costs include a 0.02% spread,</span>
-    <span class="n">markup</span><span class="o">=</span><span class="mf">0.005</span><span class="p">,</span>             <span class="c1"># a 0.5% broker markup on deposit rate,</span>
-    <span class="n">fee</span><span class="o">=</span><span class="mf">0.0002</span><span class="p">,</span>               <span class="c1"># a 0.02% dealing fee of traded notional</span>
-    <span class="n">fixed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>                  <span class="c1"># and a $1 fixed fee per trade.</span>
-    <span class="n">margin</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span>              <span class="c1"># Do not trade if trade size is smaller than 2% of the portfolio.</span>
-    <span class="n">rate</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;^IRX&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span>  <span class="c1"># Rate used to compute the yield on idle cash and cost of leverage.</span>
-    <span class="n">latency</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>                <span class="c1"># Trades are implemented with no latency</span>
-    <span class="n">steps_delay</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>            <span class="c1"># but a delay of one day.</span>
-    <span class="n">window</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>                 <span class="c1"># The observation is the current state of the market,</span>
-    <span class="n">clip</span><span class="o">=</span><span class="mf">5.</span><span class="p">,</span>                  <span class="c1"># clipped between -5 and +5 standard deviations.</span>
-    <span class="n">max_long</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>             <span class="c1"># The maximum long position is 150% of the portfolio,</span>
-    <span class="n">max_short</span><span class="o">=-</span><span class="mf">1.</span><span class="p">,</span>            <span class="c1"># the maximum short position is 100% of the portfolio.</span>
-    <span class="n">calendar</span><span class="o">=</span><span class="s1">&#39;NYSE&#39;</span><span class="p">,</span>          <span class="c1"># Use the NYSE calendar to schedule trading days.</span>
-<span class="p">)</span>
-</pre></div>
-</div>
 </section>
 <section id="example-backtesting">
 <h1>Example - Backtesting<a class="headerlink" href="#example-backtesting" title="Link to this heading">¶</a></h1>
@@ -123,12 +83,12 @@ respect to the type and time-frequency of the events. This means that you can
 run simulations either using irregularly sampled trade and quotes data, daily
 closing prices, monthly economic data or alternative data. Financial instruments
 supported include stocks, ETF and futures.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tradingenv.policy</span> <span class="kn">import</span> <span class="n">AbstractPolicy</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">tradingenv.policy</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractPolicy</span>
 
-<span class="k">class</span> <span class="nc">Portfolio6040</span><span class="p">(</span><span class="n">AbstractPolicy</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Portfolio6040</span><span class="p">(</span><span class="n">AbstractPolicy</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Implement logic of your investment strategy or RL agent here.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">act</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">act</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Invest 60% of the portfolio in SPY ETF and 40% in TLT ETF.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]</span>
 
@@ -205,7 +165,7 @@ assuming that the folder <code class="code docutils literal notranslate"><span c
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper"><div class="relations">
 <h3>Related Topics</h3>
 <ul>
@@ -214,7 +174,7 @@ assuming that the folder <code class="code docutils literal notranslate"><span c
   </ul></li>
 </ul>
 </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
@@ -222,7 +182,7 @@ assuming that the folder <code class="code docutils literal notranslate"><span c
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
+</search>
 <script>document.getElementById('searchbox').style.display = "block"</script>
   <div>
     <h3><a href="#">Table of Contents</a></h3>
@@ -245,11 +205,11 @@ assuming that the folder <code class="code docutils literal notranslate"><span c
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2023, Federico Fontana.
+      &#169;2023, Federico Fontana.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |
       <a href="_sources/index.rst.txt"
