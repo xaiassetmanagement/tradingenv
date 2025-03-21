@@ -37,8 +37,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: my-artifact
-          # Upload entire repository
           path: 'docs/build/html'  # originally '.'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          artifact_name: my-artifact  # Ensure this matches the uploaded artifact name
