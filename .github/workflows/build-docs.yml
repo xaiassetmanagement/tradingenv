@@ -33,9 +33,10 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v4
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
         with:
+          name: my-artifact
           # Upload entire repository
           path: 'docs/build/html'  # originally '.'
       - name: Deploy to GitHub Pages
