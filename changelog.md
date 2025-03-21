@@ -31,6 +31,21 @@ correctly when `window` was set to a value greater than 1.
 -->
 
 
+## [tradingenv 0.1.3] - 2025-mm-dd
+
+### Added
+
+### Changed
+
+- Discontinued backend `gym` in favor of `gymnasium`. This upgrade was long overdue as it was causing installation issues in some circumstances.
+
+### Removed
+
+
+### Fixed
+
+
+
 ## [tradingenv 0.1.2] - 2023-10-03
 
 

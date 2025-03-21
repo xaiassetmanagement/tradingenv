@@ -38,7 +38,15 @@ setuptools.setup(
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python",
     ],
-    keywords=["trading", "investment", "finance", "backtest", "reinforcement-learning", "gym"],
+    keywords=[
+        "trading",
+        "investment",
+        "finance",
+        "backtest",
+        "reinforcement-learning",
+        "gymnasium",
+        "stable-baselines3"
+    ],
     packages=setuptools.find_packages(exclude=["docs", "notebooks", "tests"]),
     install_requires=[
         "exchange_calendars",

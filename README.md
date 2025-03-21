@@ -16,7 +16,7 @@ OpenAI/gym protocol.
 
 # Installation
 
-tradingenv supports Python 3.7 or newer versions. The following command
+tradingenv supports Python 3.9 or newer versions. The following command
 line will install the latest software version.
 
 ``` console
