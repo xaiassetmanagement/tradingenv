@@ -89,6 +89,9 @@ daily closing prices, monthly economic data or alternative data.
 Financial instruments supported include stocks, ETF and futures.
 
 ``` python
+from tradingenv.policy import AbstractPolicy
+
+
 class Portfolio6040(AbstractPolicy):
     """Implement logic of your investment strategy or RL agent here."""
 
@@ -99,8 +102,8 @@ class Portfolio6040(AbstractPolicy):
 # Run the backtest.
 track_record = env.backtest(
     policy=Portfolio6040(),
-    risk_free=prices['TBIL'],
-    benchmark=prices['SPY'],
+    risk_free=data['TBIL'],
+    benchmark=data['SPY'],
 )
 
 # The track_record object stores the results of your backtest.
