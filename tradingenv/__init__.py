@@ -1,5 +1,5 @@
 __package__ = "tradingenv"
-__version__ = "0.1.1"
+__version__ = "0.1.3"
 
 # Modules.
 import tradingenv.broker.broker
